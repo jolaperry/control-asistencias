@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Asistencia de {{ mes }} {{ anio }}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h1 class="calendar-title">Asistencia {{ mes }} del {{ anio }}</h1>
+        <a href="{{ url_for('seleccionar_mes') }}" class="back-button">Seleccionar otro mes</a>
+        <a href="{{ url_for('admin_view') }}" class="back-button">Volver al Panel</a>
+
+        <div class="calendar-container">
+            <table class="calendar-table">
+                <thead>
+                    <tr>
+                        <th class="employee-header">Empleado</th>
+                        <th class="employee-header">Servicio</th>
+                        {% for dia in dias %}
+                            <th class="day-header">{{ dia }}</th>
+                        {% endfor %}
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for rut, empleado in calendario.items() %}
+                        <tr>
+                            <td class="employee-cell">{{ empleado.nombre_completo }}</td>
+                            <td class="employee-cell">{{ empleado.servicio }}</td>
+                            {% for dia in dias %}
+                                <td class="day-cell">
+                                    {% set asistencia = empleado.asistencias.get(dia) %}
+                                    {% if asistencia %}
+                                        {% set fecha_iso = asistencia.fecha.strftime('%Y-%m-%d') %}
+                                        {% if asistencia.estado == 'P' %}
+                                            <a href="{{ url_for('editar_asistencia_calendario', id_asistencia=asistencia.id_asistencia) }}" class="asistencia-link presente">{{ asistencia.estado }}</a>
+                                        {% elif asistencia.estado == 'A' %}
+                                            <a href="{{ url_for('editar_asistencia_calendario', id_asistencia=asistencia.id_asistencia) }}" class="asistencia-link ausencia">{{ asistencia.estado }}</a>
+                                        {% elif asistencia.estado == 'L' %}
+                                            <a href="{{ url_for('editar_asistencia_calendario', id_asistencia=asistencia.id_asistencia) }}" class="asistencia-link licencia">{{ asistencia.estado }}</a>
+                                        {% else %}
+                                            <a href="{{ url_for('editar_asistencia_calendario', id_asistencia=asistencia.id_asistencia) }}" class="asistencia-link otro">{{ asistencia.estado }}</a>
+                                        {% endif %}
+                                    {% else %}
+                                        <a href="{{ url_for('registrar_asistencia_calendario', RUT=rut, dia=dia, mes=mes_numero, anio=anio) }}" class="asistencia-link vacio">+</a>
+                                    {% endif %}
+                                </td>
+                            {% endfor %}
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Panel de Administrador</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <h1>Panel de Administrador - Registros de Asistencia</h1>
+    <a href="{{ url_for('seleccionar_mes') }}" class="back-button">Ver/Registrar Asistencia</a>
+    <a href="{{ url_for('exportar_registros') }}" class="back-button">Exportar a Excel</a>
+    <a href="{{ url_for('logout') }}" class="back-button" style="float: right;">Cerrar Sesión</a>
+    <table border="1">
+        <thead>
+            <tr>
+                <th>RUT</th>
+                <th>Nombre Completo</th>
+                <th>Fecha</th>
+                <th>Hora Entrada</th>
+                <th>Hora Salida</th>
+                <th>Estado</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for registro in registros %}
+            <tr>
+                <td>{{ registro.RUT }}</td>
+                <td>{{ registro.nombre_completo }}</td>
+                <td>{{ registro.fecha }}</td>
+                <td>{{ registro.hora_entrada }}</td>
+                <td>{{ registro.hora_salida or 'N/A' }}</td>
+                <td>{{ registro.estado }}</td>
+                <td>
+                    <a href="{{ url_for('editar_registro', id_asistencia=registro.id_asistencia) }}" class="action-button edit">Editar</a>
+                    <a href="{{ url_for('eliminar_registro', id_asistencia=registro.id_asistencia) }}" class="action-button delete" onclick="return confirm('¿Estás seguro de que deseas eliminar este registro?');">Eliminar</a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</body>
+</html>
