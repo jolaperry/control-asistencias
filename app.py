@@ -207,7 +207,7 @@ def ver_calendario(anio, mes):
     )
 
 # RUTA PARA SELECCIONAR MES Y AÑO
-@app.route('/seleccionar_mes')
+@app.route('/seleccionar_mes', methods=['GET'])
 @login_required
 def seleccionar_mes():
     if not current_user.tiene_rol('administrador'):
