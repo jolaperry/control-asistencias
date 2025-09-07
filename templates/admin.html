@@ -2,42 +2,51 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Panel de Administrador</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panel de Administración</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
 </head>
 <body>
-    <h1>Panel de Administrador - Registros de Asistencia</h1>
-    <a href="{{ url_for('seleccionar_mes') }}" class="back-button">Ver/Registrar Asistencia</a>
-    <a href="{{ url_for('exportar_registros') }}" class="back-button">Exportar a Excel</a>
-    <a href="{{ url_for('logout') }}" class="back-button" style="float: right;">Cerrar Sesión</a>
-    <table border="1">
-        <thead>
-            <tr>
-                <th>RUT</th>
-                <th>Nombre Completo</th>
-                <th>Fecha</th>
-                <th>Hora Entrada</th>
-                <th>Hora Salida</th>
-                <th>Estado</th>
-                <th>Acciones</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for registro in registros %}
-            <tr>
-                <td>{{ registro.RUT }}</td>
-                <td>{{ registro.nombre_completo }}</td>
-                <td>{{ registro.fecha }}</td>
-                <td>{{ registro.hora_entrada }}</td>
-                <td>{{ registro.hora_salida or 'N/A' }}</td>
-                <td>{{ registro.estado }}</td>
-                <td>
-                    <a href="{{ url_for('editar_registro', id_asistencia=registro.id_asistencia) }}" class="action-button edit">Editar</a>
-                    <a href="{{ url_for('eliminar_registro', id_asistencia=registro.id_asistencia) }}" class="action-button delete" onclick="return confirm('¿Estás seguro de que deseas eliminar este registro?');">Eliminar</a>
-                </td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+    <header>
+        <h1>Panel de Administración</h1>
+        <nav>
+            <a href="{{ url_for('logout') }}" class="back-button">Cerrar Sesión</a>
+            <a href="{{ url_for('exportar_excel') }}" class="back-button">Exportar a Excel</a>
+            <a href="{{ url_for('seleccionar_mes') }}" class="back-button">Ver Calendario</a>
+        </nav>
+    </header>
+    
+    <main>
+        <h2>Asistencias</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>RUT</th>
+                    <th>Nombre</th>
+                    <th>Fecha</th>
+                    <th>Hora de Entrada</th>
+                    <th>Hora de Salida</th>
+                    <th>Estado</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for registro in registros %}
+                <tr>
+                    <td>{{ registro.RUT }}</td>
+                    <td>{{ registro.nombre_completo }}</td>
+                    <td>{{ registro.fecha }}</td>
+                    <td>{{ registro.hora_entrada }}</td>
+                    <td>{{ registro.hora_salida }}</td>
+                    <td>{{ registro.estado }}</td>
+                    <td class="acciones">
+                        <a href="{{ url_for('editar_asistencia', id_asistencia=registro.id_asistencia) }}">Editar</a>
+                        <a href="{{ url_for('eliminar_registro', id_asistencia=registro.id_asistencia) }}">Eliminar</a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </main>
 </body>
 </html>
