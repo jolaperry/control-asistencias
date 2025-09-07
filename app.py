@@ -16,7 +16,7 @@ db = mysql.connector.connect(
     user=os.environ.get('DB_USER'),
     password=os.environ.get('DB_PASSWORD'),
     database=os.environ.get('DB_NAME'),
-    port=os.environ.get('DB_PORT', 3306) # El puerto se lee de la variable de entorno
+    port=int(os.environ.get('DB_PORT', 3306))
 )
 
 # Configurar Flask-Login
@@ -398,4 +398,5 @@ def editar_empleado(RUT):
 
 
 if __name__ == '__main__':
-    app.run(debug=True, host='0.0.0.0')
+    port = int(os.environ.get('PORT', 5000))
+    app.run(host='0.0.0.0', port=port)
