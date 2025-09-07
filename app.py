@@ -4,17 +4,19 @@ from flask_login import LoginManager, UserMixin, login_user, login_required, log
 import pandas as pd
 import calendar
 from datetime import date
+import os
 
 # Inicializar la aplicación de Flask
 app = Flask(__name__)
-app.secret_key = 'JustTheWayYouAre.1996' # ¡IMPORTANTE! Cámbialo por una clave segura
+app.secret_key = os.environ.get('SECRET_KEY', 'tu_clave_secreta_por_defecto')
 
-# Configurar la conexión a la base de datos MySQL
+# Configurar la conexión a la base de datos MySQL usando variables de entorno
 db = mysql.connector.connect(
-    host="localhost",
-    user="root",
-    password="JustTheWayYouAre.1996", # ¡IMPORTANTE! Reemplaza esto con tu contraseña
-    database="empresa_asistencias"
+    host=os.environ.get('DB_HOST'),
+    user=os.environ.get('DB_USER'),
+    password=os.environ.get('DB_PASSWORD'),
+    database=os.environ.get('DB_NAME'),
+    port=os.environ.get('DB_PORT', 3306) # El puerto se lee de la variable de entorno
 )
 
 # Configurar Flask-Login
@@ -52,6 +54,7 @@ def load_user(RUT):
     return None
 
 # RUTA PARA EL LOGIN
+@app.route('/', methods=['GET', 'POST'])
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
@@ -121,225 +124,278 @@ def eliminar_registro(id_asistencia):
     cursor.close()
     return redirect(url_for('admin_view'))
 
-# RUTA PARA EDITAR UN REGISTRO (Muestra el formulario)
-@app.route('/editar_registro/<int:id_asistencia>')
+# VISTA PARA REGISTRAR ASISTENCIA (ADMIN)
+@app.route('/registrar_asistencia', methods=['GET', 'POST'])
 @login_required
-def editar_registro(id_asistencia):
+def registrar_asistencia():
     if not current_user.tiene_rol('administrador'):
         return "Acceso denegado", 403
-    cursor = db.cursor(dictionary=True)
-    cursor.execute("SELECT u.nombre_completo, a.* FROM asistencias a JOIN usuarios u ON a.RUT = u.RUT WHERE a.id_asistencia = %s", (id_asistencia,))
-    registro_a_editar = cursor.fetchone()
-    cursor.close()
     
-    if not registro_a_editar:
-        return "Registro no encontrado", 404
+    if request.method == 'POST':
+        RUT = request.form['RUT']
+        fecha = request.form['fecha']
+        estado = request.form['estado']
+        hora_entrada = request.form.get('hora_entrada')
+        hora_salida = request.form.get('hora_salida')
+        
+        if not hora_entrada:
+            hora_entrada = None
+        if not hora_salida:
+            hora_salida = None
 
+        cursor = db.cursor()
+        sql = "INSERT INTO asistencias (RUT, fecha, estado, hora_entrada, hora_salida) VALUES (%s, %s, %s, %s, %s)"
+        cursor.execute(sql, (RUT, fecha, estado, hora_entrada, hora_salida))
+        db.commit()
+        cursor.close()
+        return redirect(url_for('admin_view'))
+    
     cursor = db.cursor(dictionary=True)
-    cursor.execute("SELECT RUT, nombre_completo FROM usuarios WHERE rol = 'empleado' OR rol LIKE '%administrador%'")
+    cursor.execute("SELECT * FROM usuarios")
     empleados = cursor.fetchall()
     cursor.close()
+    return render_template('registrar_asistencia.html', empleados=empleados)
 
-    return render_template('editar_registro.html', registro=registro_a_editar, empleados=empleados)
-
-# RUTA PARA PROCESAR LA EDICIÓN DEL REGISTRO
-@app.route('/actualizar_registro/<int:id_asistencia>', methods=['POST'])
-@login_required
-def actualizar_registro(id_asistencia):
-    if not current_user.tiene_rol('administrador'):
-        return "Acceso denegado", 403
-    
-    RUT = request.form['RUT']
-    fecha = request.form['fecha']
-    hora_entrada = request.form.get('hora_entrada', None)
-    hora_salida = request.form.get('hora_salida', None)
-    estado = request.form['estado']
-
-    cursor = db.cursor()
-    sql = "UPDATE asistencias SET RUT = %s, fecha = %s, hora_entrada = %s, hora_salida = %s, estado = %s WHERE id_asistencia = %s"
-    values = (RUT, fecha, hora_entrada, hora_salida, estado, id_asistencia)
-    cursor.execute(sql, values)
-    db.commit()
-    cursor.close()
-    return redirect(url_for('admin_view'))
-
-# RUTA PARA EXPORTAR DATOS A UN ARCHIVO CSV/EXCEL
-@app.route('/exportar')
-@login_required
-def exportar_registros():
-    if not current_user.tiene_rol('administrador'):
-        return "Acceso denegado", 403
-
-    cursor = db.cursor(dictionary=True)
-    cursor.execute("SELECT u.nombre_completo, a.fecha, a.hora_entrada, a.hora_salida, a.estado FROM asistencias a JOIN usuarios u ON a.RUT = u.RUT")
-    registros = cursor.fetchall()
-    cursor.close()
-
-    df = pd.DataFrame(registros)
-    
-    output = pd.ExcelWriter('asistencias.xlsx', engine='xlsxwriter')
-    df.to_excel(output, sheet_name='Registros', index=False)
-    output.close()
-
-    return send_file('asistencias.xlsx', as_attachment=True)
-
-# RUTA PARA MOSTRAR EL SELECTOR DE MES
-@app.route('/seleccionar_mes', methods=['GET', 'POST'])
-@login_required
-def seleccionar_mes():
-    if not current_user.tiene_rol('administrador'):
-        return "Acceso denegado", 403
-    if request.method == 'POST':
-        mes = request.form['mes']
-        anio = request.form['anio']
-        return redirect(url_for('ver_calendario', mes=mes, anio=anio))
-        
-    return render_template('seleccionar_mes.html')
-
-# RUTA PARA VER EL CALENDARIO MENSUAL
-@app.route('/ver_calendario/<int:anio>/<int:mes>')
+# RUTA PARA EL CALENDARIO
+@app.route('/calendario/<int:anio>/<int:mes>')
 @login_required
 def ver_calendario(anio, mes):
     if not current_user.tiene_rol('administrador'):
         return "Acceso denegado", 403
-    
-    # Obtener la lista de empleados y administradores con rol de empleado, ordenados por servicio
-    cursor = db.cursor(dictionary=True)
-    cursor.execute("""
-        SELECT RUT, nombre_completo, servicio FROM usuarios 
-        WHERE rol = 'empleado' OR rol LIKE '%administrador%'
-        ORDER BY
-            CASE servicio
-                WHEN 'Bloqueo' THEN 1
-                WHEN 'Ingreso' THEN 2
-                WHEN 'Mesa Central' THEN 3
-                WHEN 'HLF' THEN 4
-                ELSE 5 
-            END,
-            nombre_completo ASC
-    """)
-    empleados = cursor.fetchall()
 
-    # Obtener los registros de asistencia para el mes y año seleccionados
-    query = "SELECT * FROM asistencias WHERE MONTH(fecha) = %s AND YEAR(fecha) = %s"
-    cursor.execute(query, (mes, anio))
-    asistencias_mes = cursor.fetchall()
-    cursor.close()
-
-    # Organizar los datos para la vista de calendario
-    calendario_data = {}
-    for empleado in empleados:
-        calendario_data[empleado['RUT']] = {
-            'nombre_completo': empleado['nombre_completo'],
-            'servicio': empleado['servicio'],
-            'asistencias': {}
-        }
-
-    for asistencia in asistencias_mes:
-        dia = asistencia['fecha'].day
-        RUT = asistencia['RUT']
-        if RUT in calendario_data:
-            calendario_data[RUT]['asistencias'][dia] = asistencia
-
-    # Generar la lista de días del mes
-    num_dias = calendar.monthrange(anio, mes)[1]
-    dias_del_mes = list(range(1, num_dias + 1))
-    
+    mes_numero = mes
     nombre_mes = NOMBRES_MESES[mes - 1]
     
-    return render_template('ver_calendario.html',
-                           anio=anio,
-                           mes=nombre_mes,
-                           mes_numero=mes, # <-- Corregido: se pasa el número del mes
-                           dias=dias_del_mes,
-                           calendario=calendario_data)
+    # Obtener el último día del mes
+    num_dias = calendar.monthrange(anio, mes)[1]
+    dias_mes = list(range(1, num_dias + 1))
+    
+    # Obtener todos los empleados y sus asistencias para el mes seleccionado
+    cursor = db.cursor(dictionary=True)
+    cursor.execute("SELECT RUT, nombre_completo, servicio FROM usuarios")
+    empleados_db = cursor.fetchall()
+
+    calendario = {}
+    for empleado in empleados_db:
+        empleado['asistencias'] = {}
+        calendario[empleado['RUT']] = empleado
+
+    # Obtener asistencias del mes
+    cursor.execute(
+        "SELECT RUT, DAY(fecha) as dia, estado, id_asistencia FROM asistencias WHERE YEAR(fecha) = %s AND MONTH(fecha) = %s",
+        (anio, mes)
+    )
+    asistencias_db = cursor.fetchall()
+    cursor.close()
+
+    for asistencia in asistencias_db:
+        rut = asistencia['RUT']
+        dia = asistencia['dia']
+        if rut in calendario:
+            calendario[rut]['asistencias'][dia] = {
+                'estado': asistencia['estado'],
+                'id_asistencia': asistencia['id_asistencia']
+            }
+
+    return render_template(
+        'ver_calendario.html',
+        calendario=calendario,
+        dias=dias_mes,
+        mes=nombre_mes,
+        anio=anio,
+        mes_numero=mes_numero
+    )
+
+# RUTA PARA SELECCIONAR MES Y AÑO
+@app.route('/seleccionar_mes')
+@login_required
+def seleccionar_mes():
+    if not current_user.tiene_rol('administrador'):
+        return "Acceso denegado", 403
+    
+    anio_actual = date.today().year
+    meses_info = [
+        {'numero': i + 1, 'nombre': NOMBRES_MESES[i]} for i in range(12)
+    ]
+    return render_template('seleccionar_mes.html', anio_actual=anio_actual, meses=meses_info)
+
 
 # RUTA PARA REGISTRAR ASISTENCIA DESDE EL CALENDARIO
-@app.route('/registrar_asistencia_calendario/<string:RUT>/<int:dia>/<int:mes>/<int:anio>')
+@app.route('/registrar_asistencia_calendario/<string:RUT>/<int:dia>/<int:mes>/<int:anio>', methods=['GET', 'POST'])
 @login_required
 def registrar_asistencia_calendario(RUT, dia, mes, anio):
     if not current_user.tiene_rol('administrador'):
         return "Acceso denegado", 403
 
-    # Obtener los datos del empleado
+    fecha = date(anio, mes, dia)
+    
+    if request.method == 'POST':
+        estado = request.form['estado']
+        hora_entrada = request.form.get('hora_entrada')
+        hora_salida = request.form.get('hora_salida')
+        
+        if not hora_entrada:
+            hora_entrada = None
+        if not hora_salida:
+            hora_salida = None
+
+        cursor = db.cursor()
+        sql = "INSERT INTO asistencias (RUT, fecha, estado, hora_entrada, hora_salida) VALUES (%s, %s, %s, %s, %s)"
+        cursor.execute(sql, (RUT, fecha, estado, hora_entrada, hora_salida))
+        db.commit()
+        cursor.close()
+        return redirect(url_for('ver_calendario', anio=anio, mes=mes))
+    
     cursor = db.cursor(dictionary=True)
-    cursor.execute("SELECT RUT, nombre_completo, servicio FROM usuarios WHERE RUT = %s", (RUT,))
+    cursor.execute("SELECT * FROM usuarios WHERE RUT = %s", (RUT,))
     empleado = cursor.fetchone()
     cursor.close()
 
-    if not empleado:
-        return "Empleado no encontrado", 404
+    nombre_mes = NOMBRES_MESES[mes - 1]
+    return render_template(
+        'registrar_asistencia_calendario.html',
+        empleado=empleado,
+        dia=dia,
+        mes=nombre_mes,
+        anio=anio,
+        mes_numero=mes
+    )
 
-    fecha_registro = date(anio, mes, dia)
-    fecha_formato = fecha_registro.strftime('%d-%m-%Y')
-    
-    return render_template('registro_asistencia_calendario.html', 
-                           empleado=empleado, 
-                           fecha=fecha_formato,
-                           fecha_iso=fecha_registro.isoformat())
-
-# RUTA PARA GUARDAR ASISTENCIA DESDE EL CALENDARIO
-@app.route('/guardar_asistencia_calendario', methods=['POST'])
+# RUTA PARA EXPORTAR DATOS A EXCEL
+@app.route('/exportar_excel')
 @login_required
-def guardar_asistencia_calendario():
+def exportar_excel():
     if not current_user.tiene_rol('administrador'):
         return "Acceso denegado", 403
     
-    RUT = request.form['RUT']
-    fecha = request.form['fecha']
-    hora_entrada = request.form.get('hora_entrada', None)
-    hora_salida = request.form.get('hora_salida', None)
-    estado = request.form['estado']
+    cursor = db.cursor(dictionary=True)
+    cursor.execute("""
+        SELECT 
+            u.RUT,
+            u.nombre_completo,
+            u.servicio,
+            a.fecha,
+            a.hora_entrada,
+            a.hora_salida,
+            a.estado
+        FROM asistencias a
+        JOIN usuarios u ON a.RUT = u.RUT
+        ORDER BY a.fecha DESC
+    """)
+    registros = cursor.fetchall()
+    cursor.close()
+
+    df = pd.DataFrame(registros)
+    
+    # Crea un archivo Excel en memoria
+    excel_file = 'reporte_asistencias.xlsx'
+    df.to_excel(excel_file, index=False)
+    
+    return send_file(excel_file, as_attachment=True)
+
+# VISTA PARA EDITAR REGISTROS
+@app.route('/editar_asistencia/<int:id_asistencia>', methods=['GET', 'POST'])
+@login_required
+def editar_asistencia(id_asistencia):
+    if not current_user.tiene_rol('administrador'):
+        return "Acceso denegado", 403
+    
+    cursor = db.cursor(dictionary=True)
+    cursor.execute("SELECT * FROM asistencias WHERE id_asistencia = %s", (id_asistencia,))
+    registro = cursor.fetchone()
+    
+    if request.method == 'POST':
+        estado = request.form['estado']
+        hora_entrada = request.form.get('hora_entrada')
+        hora_salida = request.form.get('hora_salida')
+        
+        if not hora_entrada:
+            hora_entrada = None
+        if not hora_salida:
+            hora_salida = None
+
+        sql = "UPDATE asistencias SET estado = %s, hora_entrada = %s, hora_salida = %s WHERE id_asistencia = %s"
+        cursor.execute(sql, (estado, hora_entrada, hora_salida, id_asistencia))
+        db.commit()
+        cursor.close()
+        return redirect(url_for('admin_view'))
+    
+    cursor.close()
+    return render_template('editar_asistencia.html', registro=registro)
+
+
+# VISTA PARA ELIMINAR EMPLEADOS
+@app.route('/eliminar_empleado/<string:RUT>')
+@login_required
+def eliminar_empleado(RUT):
+    if not current_user.tiene_rol('administrador'):
+        return "Acceso denegado", 403
 
     cursor = db.cursor()
-    sql = "INSERT INTO asistencias (RUT, fecha, hora_entrada, hora_salida, estado) VALUES (%s, %s, %s, %s, %s)"
-    values = (RUT, fecha, hora_entrada, hora_salida, estado)
-    cursor.execute(sql, values)
+    # Eliminar registros de asistencia del empleado primero
+    sql_asistencias = "DELETE FROM asistencias WHERE RUT = %s"
+    cursor.execute(sql_asistencias, (RUT,))
+    
+    # Eliminar el empleado
+    sql_empleado = "DELETE FROM usuarios WHERE RUT = %s"
+    cursor.execute(sql_empleado, (RUT,))
+    
     db.commit()
     cursor.close()
+    return redirect(url_for('admin_view'))
 
-    # Redirigir de vuelta al calendario
-    fecha_obj = date.fromisoformat(fecha)
-    return redirect(url_for('ver_calendario', mes=fecha_obj.month, anio=fecha_obj.year))
 
-# RUTA PARA EDITAR ASISTENCIA DESDE EL CALENDARIO
-@app.route('/editar_asistencia_calendario/<int:id_asistencia>')
+# VISTA PARA AGREGAR NUEVOS EMPLEADOS
+@app.route('/agregar_empleado', methods=['GET', 'POST'])
 @login_required
-def editar_asistencia_calendario(id_asistencia):
+def agregar_empleado():
     if not current_user.tiene_rol('administrador'):
         return "Acceso denegado", 403
     
-    cursor = db.cursor(dictionary=True)
-    cursor.execute("SELECT u.nombre_completo, u.servicio, a.* FROM asistencias a JOIN usuarios u ON a.RUT = u.RUT WHERE a.id_asistencia = %s", (id_asistencia,))
-    registro = cursor.fetchone()
-    cursor.close()
-
-    if not registro:
-        return "Registro no encontrado", 404
+    if request.method == 'POST':
+        RUT = request.form['RUT']
+        nombre_completo = request.form['nombre_completo']
+        email = request.form['email']
+        contraseña = request.form['contraseña']
+        rol = request.form['rol']
+        servicio = request.form['servicio']
         
-    return render_template('editar_asistencia_calendario.html', registro=registro)
+        cursor = db.cursor()
+        sql = "INSERT INTO usuarios (RUT, nombre_completo, email, contraseña, rol, servicio) VALUES (%s, %s, %s, %s, %s, %s)"
+        cursor.execute(sql, (RUT, nombre_completo, email, contraseña, rol, servicio))
+        db.commit()
+        cursor.close()
+        return redirect(url_for('admin_view'))
 
-# RUTA PARA ACTUALIZAR ASISTENCIA DESDE EL CALENDARIO
-@app.route('/actualizar_asistencia_calendario/<int:id_asistencia>', methods=['POST'])
+    return render_template('agregar_empleado.html')
+
+# VISTA PARA EDITAR EMPLEADOS
+@app.route('/editar_empleado/<string:RUT>', methods=['GET', 'POST'])
 @login_required
-def actualizar_asistencia_calendario(id_asistencia):
+def editar_empleado(RUT):
     if not current_user.tiene_rol('administrador'):
         return "Acceso denegado", 403
     
-    hora_entrada = request.form.get('hora_entrada', None)
-    hora_salida = request.form.get('hora_salida', None)
-    estado = request.form['estado']
-
     cursor = db.cursor(dictionary=True)
-    cursor.execute("UPDATE asistencias SET hora_entrada = %s, hora_salida = %s, estado = %s WHERE id_asistencia = %s", (hora_entrada, hora_salida, estado, id_asistencia))
-    db.commit()
+    cursor.execute("SELECT * FROM usuarios WHERE RUT = %s", (RUT,))
+    empleado = cursor.fetchone()
     
-    cursor.execute("SELECT fecha FROM asistencias WHERE id_asistencia = %s", (id_asistencia,))
-    fecha_obj = cursor.fetchone()['fecha']
+    if request.method == 'POST':
+        nombre_completo = request.form['nombre_completo']
+        email = request.form['email']
+        contraseña = request.form['contraseña']
+        rol = request.form['rol']
+        servicio = request.form['servicio']
+        
+        sql = "UPDATE usuarios SET nombre_completo = %s, email = %s, contraseña = %s, rol = %s, servicio = %s WHERE RUT = %s"
+        cursor.execute(sql, (nombre_completo, email, contraseña, rol, servicio, RUT))
+        db.commit()
+        cursor.close()
+        return redirect(url_for('admin_view'))
+
     cursor.close()
-    
-    return redirect(url_for('ver_calendario', mes=fecha_obj.month, anio=fecha_obj.year))
+    return render_template('editar_empleado.html', empleado=empleado)
 
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(debug=True, host='0.0.0.0')
