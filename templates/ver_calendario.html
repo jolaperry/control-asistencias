@@ -20,11 +20,11 @@
                 <tr>
                     <th rowspan="2">Nombre</th>
                     <th rowspan="2">Servicio</th>
-                    <th colspan="{{ dias|length }}">Días del Mes</th>
+                    <th colspan="{{ dias|length }}"></th>
                 </tr>
                 <tr>
                     {% for dia in dias %}
-                    <th class="dia-semana">{{ dia }}</th>
+                    <th class="dia-semana">{{ dias_semana_abrev[loop.index0] }}<br>{{ dia }}</th>
                     {% endfor %}
                 </tr>
             </thead>
