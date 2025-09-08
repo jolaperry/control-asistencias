@@ -2,29 +2,40 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Mis Registros</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panel de Empleado</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 </head>
 <body>
-    <h1>Mis Registros de Asistencia</h1>
-    <a href="{{ url_for('logout') }}" class="back-button">Cerrar Sesión</a>
-    <table border="1">
-        <thead>
-            <tr>
-                <th>Fecha</th>
-                <th>Hora Entrada</th>
-                <th>Hora Salida</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for registro in registros %}
-            <tr>
-                <td>{{ registro.fecha }}</td>
-                <td>{{ registro.hora_entrada }}</td>
-                <td>{{ registro.hora_salida or 'N/A' }}</td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+    <header>
+        <h1>Mis Asistencias</h1>
+        <nav>
+            <a href="{{ url_for('logout') }}" class="back-button">Cerrar Sesión</a>
+        </nav>
+    </header>
+    
+    <main>
+        <h2>Mis Registros de Asistencia</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Fecha</th>
+                    <th>Hora de Entrada</th>
+                    <th>Hora de Salida</th>
+                    <th>Estado</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for registro in registros %}
+                <tr>
+                    <td>{{ registro.fecha }}</td>
+                    <td>{{ registro.hora_entrada }}</td>
+                    <td>{{ registro.hora_salida }}</td>
+                    <td>{{ registro.estado }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </main>
 </body>
 </html>
