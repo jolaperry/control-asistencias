@@ -323,6 +323,32 @@ def editar_asistencia(id_asistencia):
     return render_template('editar_asistencia.html', registro=registro)
 
 
+# VISTA PARA EDITAR ASISTENCIA DESDE EL CALENDARIO
+@app.route('/editar_asistencia_calendario/<int:id_asistencia>/<int:anio>/<int:mes>', methods=['GET', 'POST'])
+@login_required
+def editar_asistencia_calendario(id_asistencia, anio, mes):
+    if not current_user.tiene_rol('administrador'):
+        return "Acceso denegado", 403
+    
+    cursor = db.cursor(dictionary=True)
+    cursor.execute("SELECT * FROM asistencias WHERE id_asistencia = %s", (id_asistencia,))
+    registro = cursor.fetchone()
+    
+    if request.method == 'POST':
+        estado = request.form['estado']
+        hora_entrada = request.form.get('hora_entrada')
+        hora_salida = request.form.get('hora_salida')
+        
+        sql = "UPDATE asistencias SET estado = %s, hora_entrada = %s, hora_salida = %s WHERE id_asistencia = %s"
+        cursor.execute(sql, (estado, hora_entrada, hora_salida, id_asistencia))
+        db.commit()
+        cursor.close()
+        return redirect(url_for('ver_calendario', anio=anio, mes=mes))
+    
+    cursor.close()
+    return render_template('editar_asistencia_calendario.html', registro=registro, anio=anio, mes_numero=mes)
+
+
 # VISTA PARA ELIMINAR EMPLEADOS
 @app.route('/eliminar_empleado/<string:RUT>')
 @login_required
