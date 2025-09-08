@@ -19,10 +19,14 @@
         <form action="{{ url_for('registrar_asistencia_calendario', RUT=empleado.RUT, dia=dia, mes=mes_numero, anio=anio) }}" method="POST">
             <label for="estado">Estado:</label>
             <select name="estado" id="estado" required>
-                <option value="Presente">Presente</option>
-                <option value="Ausente">Ausente</option>
-                <option value="Justificado">Justificado</option>
-                <option value="Vacaciones">Vacaciones</option>
+                <option value="Presente">P</option>
+                <option value="Día libre">DL</option>
+                <option value="Permisos Especiales/legales">PE</option>
+                <option value="Vacaciones">V</option>
+                <option value="Días capacitación ingreso">CAP</option>
+                <option value="Ausencia">A</option>
+                <option value="Licencia Médica">L</option>
+                <option value="Renuncia/Desvinculación">R</option>
             </select>
             <br>
             <label for="hora_entrada">Hora de Entrada:</label>
