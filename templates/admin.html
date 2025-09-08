@@ -38,7 +38,18 @@
                     <td>{{ registro.fecha }}</td>
                     <td>{{ registro.hora_entrada }}</td>
                     <td>{{ registro.hora_salida }}</td>
-                    <td>{{ registro.estado }}</td>
+                    <td class="estado-{{ registro.estado | replace(' ', '_') | replace('/', '_') | lower }}">
+                        {% if registro.estado == 'Presente' %} P
+                        {% elif registro.estado == 'Día libre' %} DL
+                        {% elif registro.estado == 'Permisos Especiales/legales' %} PE
+                        {% elif registro.estado == 'Vacaciones' %} V
+                        {% elif registro.estado == 'Días capacitación ingreso' %} CAP
+                        {% elif registro.estado == 'Ausencia' %} A
+                        {% elif registro.estado == 'Licencia Médica' %} L
+                        {% elif registro.estado == 'Renuncia/Desvinculación' %} R
+                        {% else %} {{ registro.estado }}
+                        {% endif %}
+                    </td>
                     <td class="acciones">
                         <a href="{{ url_for('editar_asistencia', id_asistencia=registro.id_asistencia) }}">Editar</a>
                         <a href="{{ url_for('eliminar_registro', id_asistencia=registro.id_asistencia) }}">Eliminar</a>
