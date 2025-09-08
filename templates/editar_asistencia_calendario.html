@@ -18,10 +18,14 @@
         <form action="{{ url_for('editar_asistencia_calendario', id_asistencia=registro.id_asistencia, anio=anio, mes=mes_numero) }}" method="POST">
             <label for="estado">Estado:</label>
             <select name="estado" id="estado" required>
-                <option value="Presente" {% if registro.estado == 'Presente' %}selected{% endif %}>Presente</option>
-                <option value="Ausente" {% if registro.estado == 'Ausente' %}selected{% endif %}>Ausente</option>
-                <option value="Justificado" {% if registro.estado == 'Justificado' %}selected{% endif %}>Justificado</option>
-                <option value="Vacaciones" {% if registro.estado == 'Vacaciones' %}selected{% endif %}>Vacaciones</option>
+                <option value="Presente" {% if registro.estado == 'Presente' %}selected{% endif %}>P</option>
+                <option value="Día libre" {% if registro.estado == 'Día libre' %}selected{% endif %}>DL</option>
+                <option value="Permisos Especiales/legales" {% if registro.estado == 'Permisos Especiales/legales' %}selected{% endif %}>PE</option>
+                <option value="Vacaciones" {% if registro.estado == 'Vacaciones' %}selected{% endif %}>V</option>
+                <option value="Días capacitación ingreso" {% if registro.estado == 'Días capacitación ingreso' %}selected{% endif %}>CAP</option>
+                <option value="Ausencia" {% if registro.estado == 'Ausencia' %}selected{% endif %}>A</option>
+                <option value="Licencia Médica" {% if registro.estado == 'Licencia Médica' %}selected{% endif %}>L</option>
+                <option value="Renuncia/Desvinculación" {% if registro.estado == 'Renuncia/Desvinculación' %}selected{% endif %}>R</option>
             </select>
             <br>
             <label for="hora_entrada">Hora de Entrada:</label>
