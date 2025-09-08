@@ -59,39 +59,35 @@ table td a:hover {
 
 /* Estilos para los estados de asistencia */
 .estado-presente {
-    background-color: #b3e6b3; /* Un verde claro para presente */
+    color: black;
+    background-color: transparent;
     font-weight: bold;
 }
 
-.estado-dia_libre {
-    background-color: #f0f0f0;
-}
-
-.estado-permisos_especiales/legales {
-    background-color: #ffe6b3; /* Amarillo claro */
-}
-
-.estado-vacaciones {
-    background-color: #b3d9ff; /* Azul claro */
-}
-
+.estado-dia_libre,
+.estado-permisos_especiales/legales,
+.estado-vacaciones,
 .estado-dias_capacitacion_ingreso {
-    background-color: #e6b3ff; /* Morado claro */
+    color: black;
+    background-color: transparent;
+    font-weight: bold;
 }
 
 .estado-ausencia {
-    background-color: #ffb3b3; /* Rojo claro */
+    color: #9c0006;
+    background-color: #ffc7ce;
+    font-weight: bold;
 }
 
 .estado-licencia_medica {
+    color: red;
     background-color: #8fbc8f; /* Verde oliva oscuro */
-    color: white;
     font-weight: bold;
 }
 
 .estado-renuncia/desvinculacion {
-    background-color: #dc143c; /* Carmesí */
-    color: white;
+    color: red;
+    background-color: transparent;
     font-weight: bold;
 }
 
