@@ -33,7 +33,18 @@
                     {% for dia in dias %}
                     <td>
                         {% if dia in empleado.asistencias %}
-                            <a href="{{ url_for('editar_asistencia_calendario', id_asistencia=empleado.asistencias[dia].id_asistencia, anio=anio, mes=mes_numero) }}" class="estado-{{ empleado.asistencias[dia].estado|lower }}">{{ empleado.asistencias[dia].estado }}</a>
+                            <a href="{{ url_for('editar_asistencia_calendario', id_asistencia=empleado.asistencias[dia].id_asistencia, anio=anio, mes=mes_numero) }}" class="estado-{{ empleado.asistencias[dia].estado | replace(' ', '_') | replace('/', '_') | lower }}">
+                                {% if empleado.asistencias[dia].estado == 'Presente' %} P
+                                {% elif empleado.asistencias[dia].estado == 'Día libre' %} DL
+                                {% elif empleado.asistencias[dia].estado == 'Permisos Especiales/legales' %} PE
+                                {% elif empleado.asistencias[dia].estado == 'Vacaciones' %} V
+                                {% elif empleado.asistencias[dia].estado == 'Días capacitación ingreso' %} CAP
+                                {% elif empleado.asistencias[dia].estado == 'Ausencia' %} A
+                                {% elif empleado.asistencias[dia].estado == 'Licencia Médica' %} L
+                                {% elif empleado.asistencias[dia].estado == 'Renuncia/Desvinculación' %} R
+                                {% else %} {{ empleado.asistencias[dia].estado }}
+                                {% endif %}
+                            </a>
                         {% else %}
                             <a href="{{ url_for('registrar_asistencia_calendario', RUT=rut, dia=dia, mes=mes_numero, anio=anio) }}" class="estado-ninguno">+</a>
                         {% endif %}
