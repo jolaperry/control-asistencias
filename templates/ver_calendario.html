@@ -35,7 +35,7 @@
                         {% if dia in empleado.asistencias %}
                             <a href="{{ url_for('editar_asistencia_calendario', id_asistencia=empleado.asistencias[dia].id_asistencia, anio=anio, mes=mes_numero) }}" class="estado-{{ empleado.asistencias[dia].estado|lower }}">{{ empleado.asistencias[dia].estado }}</a>
                         {% else %}
-                            <a href="{{ url_for('registrar_asistencia_calendario', RUT=rut, dia=dia, mes=mes_numero, anio=anio) }}" class="estado-ninguno">N/A</a>
+                            <a href="{{ url_for('registrar_asistencia_calendario', RUT=rut, dia=dia, mes=mes_numero, anio=anio) }}" class="estado-ninguno">+</a>
                         {% endif %}
                     </td>
                     {% endfor %}
