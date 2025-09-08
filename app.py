@@ -163,7 +163,6 @@ def ver_calendario(anio, mes):
     if not current_user.tiene_rol('administrador'):
         return "Acceso denegado", 403
 
-    mes_numero = mes
     nombre_mes = NOMBRES_MESES[mes - 1]
     
     # Obtener el último día del mes
@@ -172,7 +171,9 @@ def ver_calendario(anio, mes):
     
     # Obtener todos los empleados y sus asistencias para el mes seleccionado
     cursor = db.cursor(dictionary=True)
-    cursor.execute("SELECT RUT, nombre_completo, servicio FROM usuarios")
+    
+    # Consulta corregida para ordenar por 'servicio' y 'nombre_completo'
+    cursor.execute("SELECT RUT, nombre_completo, servicio FROM usuarios ORDER BY servicio ASC, nombre_completo ASC")
     empleados_db = cursor.fetchall()
 
     calendario = {}
@@ -203,7 +204,7 @@ def ver_calendario(anio, mes):
         dias=dias_mes,
         mes=nombre_mes,
         anio=anio,
-        mes_numero=mes_numero
+        mes_numero=mes
     )
 
 # RUTA PARA SELECCIONAR MES Y AÑO
