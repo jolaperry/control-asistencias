@@ -2,55 +2,36 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Editar Registro</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Editar Asistencia</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 </head>
 <body>
-    <div class="form-container">
-        <h1>Editar Registro de Asistencia</h1>
-        <a href="{{ url_for('admin_view') }}" class="back-button">Volver al Panel de Administrador</a>
-        <br><br>
-        <form action="{{ url_for('actualizar_registro', id_asistencia=registro.id_asistencia) }}" method="post">
-            <div class="form-group">
-                <label for="RUT">Empleado:</label>
-                <select id="RUT" name="RUT" required>
-                    {% for empleado in empleados %}
-                    <option value="{{ empleado.RUT }}" {% if empleado.RUT == registro.RUT %}selected{% endif %}>{{ empleado.nombre_completo }}</option>
-                    {% endfor %}
-                </select>
-            </div>
-            
-            <div class="form-group">
-                <label for="fecha">Fecha:</label>
-                <input type="date" id="fecha" name="fecha" value="{{ registro.fecha.strftime('%Y-%m-%d') }}" required>
-            </div>
-            
-            <div class="form-group">
-                <label for="estado">Estado:</label>
-                <select id="estado" name="estado" required>
-                    <option value="P" {% if registro.estado == 'P' %}selected{% endif %}>Presente</option>
-                    <option value="DL" {% if registro.estado == 'DL' %}selected{% endif %}>Día libre</option>
-                    <option value="PE" {% if registro.estado == 'PE' %}selected{% endif %}>Permisos Especiales/legales</option>
-                    <option value="V" {% if registro.estado == 'V' %}selected{% endif %}>Vacaciones</option>
-                    <option value="CAP" {% if registro.estado == 'CAP' %}selected{% endif %}>Días capacitación ingreso</option>
-                    <option value="A" {% if registro.estado == 'A' %}selected{% endif %}>Ausencia</option>
-                    <option value="L" {% if registro.estado == 'L' %}selected{% endif %}>Licencia Médica</option>
-                    <option value="R">Renuncia/Desvinculación</option>
-                </select>
-            </div>
-            
-            <div class="form-group">
-                <label for="hora_entrada">Hora Entrada:</label>
-                <input type="time" id="hora_entrada" name="hora_entrada" value="{{ registro.hora_entrada }}" {% if registro.hora_entrada %}required{% endif %}>
-            </div>
-            
-            <div class="form-group">
-                <label for="hora_salida">Hora Salida:</label>
-                <input type="time" id="hora_salida" name="hora_salida" value="{{ registro.hora_salida }}" {% if registro.hora_salida %}required{% endif %}>
-            </div>
-            
-            <button type="submit">Actualizar Registro</button>
+    <header>
+        <h1>Editar Asistencia</h1>
+        <nav>
+            <a href="{{ url_for('admin_view') }}" class="back-button">Volver</a>
+        </nav>
+    </header>
+
+    <main>
+        <form action="{{ url_for('editar_asistencia', id_asistencia=registro.id_asistencia) }}" method="POST">
+            <label for="estado">Estado:</label>
+            <select name="estado" id="estado" required>
+                <option value="Presente" {% if registro.estado == 'Presente' %}selected{% endif %}>Presente</option>
+                <option value="Ausente" {% if registro.estado == 'Ausente' %}selected{% endif %}>Ausente</option>
+                <option value="Justificado" {% if registro.estado == 'Justificado' %}selected{% endif %}>Justificado</option>
+                <option value="Vacaciones" {% if registro.estado == 'Vacaciones' %}selected{% endif %}>Vacaciones</option>
+            </select>
+            <br>
+            <label for="hora_entrada">Hora de Entrada:</label>
+            <input type="time" name="hora_entrada" id="hora_entrada" value="{{ registro.hora_entrada if registro.hora_entrada else '' }}">
+            <br>
+            <label for="hora_salida">Hora de Salida:</label>
+            <input type="time" name="hora_salida" id="hora_salida" value="{{ registro.hora_salida if registro.hora_salida else '' }}">
+            <br>
+            <button type="submit">Actualizar Asistencia</button>
         </form>
-    </div>
+    </main>
 </body>
 </html>
