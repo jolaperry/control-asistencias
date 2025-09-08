@@ -125,9 +125,9 @@ def eliminar_registro(id_asistencia):
     return redirect(url_for('admin_view'))
 
 # VISTA PARA REGISTRAR ASISTENCIA (ADMIN)
-@app.route('/registrar_asistencia', methods=['GET', 'POST'])
+@app.route('/registro_asistencia', methods=['GET', 'POST'])
 @login_required
-def registrar_asistencia():
+def registro_asistencia():
     if not current_user.tiene_rol('administrador'):
         return "Acceso denegado", 403
     
@@ -154,7 +154,7 @@ def registrar_asistencia():
     cursor.execute("SELECT * FROM usuarios")
     empleados = cursor.fetchall()
     cursor.close()
-    return render_template('registrar_asistencia.html', empleados=empleados)
+    return render_template('registro_asistencia.html', empleados=empleados)
 
 # RUTA PARA EL CALENDARIO
 @app.route('/calendario/<int:anio>/<int:mes>')
@@ -221,9 +221,9 @@ def seleccionar_mes():
 
 
 # RUTA PARA REGISTRAR ASISTENCIA DESDE EL CALENDARIO
-@app.route('/registrar_asistencia_calendario/<string:RUT>/<int:dia>/<int:mes>/<int:anio>', methods=['GET', 'POST'])
+@app.route('/registro_asistencia_calendario/<string:RUT>/<int:dia>/<int:mes>/<int:anio>', methods=['GET', 'POST'])
 @login_required
-def registrar_asistencia_calendario(RUT, dia, mes, anio):
+def registro_asistencia_calendario(RUT, dia, mes, anio):
     if not current_user.tiene_rol('administrador'):
         return "Acceso denegado", 403
 
@@ -253,7 +253,7 @@ def registrar_asistencia_calendario(RUT, dia, mes, anio):
 
     nombre_mes = NOMBRES_MESES[mes - 1]
     return render_template(
-        'registrar_asistencia_calendario.html',
+        'registro_asistencia_calendario.html',
         empleado=empleado,
         dia=dia,
         mes=nombre_mes,
