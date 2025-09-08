@@ -24,11 +24,12 @@ login_manager = LoginManager()
 login_manager.init_app(app)
 login_manager.login_view = 'login'
 
-# Lista de nombres de meses en español
+# Lista de nombres de meses y días en español
 NOMBRES_MESES = [
     "Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio",
     "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"
 ]
+NOMBRES_DIAS = ["Lun", "Mar", "Mié", "Jue", "Vie", "Sáb", "Dom"]
 
 # Clase de Usuario para Flask-Login
 class Usuario(UserMixin):
@@ -165,9 +166,15 @@ def ver_calendario(anio, mes):
 
     nombre_mes = NOMBRES_MESES[mes - 1]
     
-    # Obtener el último día del mes
+    # Obtener el número de días del mes
     num_dias = calendar.monthrange(anio, mes)[1]
     dias_mes = list(range(1, num_dias + 1))
+    
+    # Obtener las abreviaciones de los días de la semana
+    dias_semana_abrev = []
+    for dia in dias_mes:
+        dia_semana_num = date(anio, mes, dia).weekday()
+        dias_semana_abrev.append(NOMBRES_DIAS[dia_semana_num])
     
     # Obtener todos los empleados y sus asistencias para el mes seleccionado
     cursor = db.cursor(dictionary=True)
@@ -214,6 +221,7 @@ def ver_calendario(anio, mes):
         'ver_calendario.html',
         calendario=calendario,
         dias=dias_mes,
+        dias_semana_abrev=dias_semana_abrev,
         mes=nombre_mes,
         anio=anio,
         mes_numero=mes
