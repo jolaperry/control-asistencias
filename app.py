@@ -125,9 +125,9 @@ def eliminar_registro(id_asistencia):
     return redirect(url_for('admin_view'))
 
 # VISTA PARA REGISTRAR ASISTENCIA (ADMIN)
-@app.route('/registro_asistencia', methods=['GET', 'POST'])
+@app.route('/registrar_asistencia', methods=['GET', 'POST'])
 @login_required
-def registro_asistencia():
+def registrar_asistencia():
     if not current_user.tiene_rol('administrador'):
         return "Acceso denegado", 403
     
@@ -154,7 +154,7 @@ def registro_asistencia():
     cursor.execute("SELECT * FROM usuarios")
     empleados = cursor.fetchall()
     cursor.close()
-    return render_template('registro_asistencia.html', empleados=empleados)
+    return render_template('registrar_asistencia.html', empleados=empleados)
 
 # RUTA PARA EL CALENDARIO
 @app.route('/calendario/<int:anio>/<int:mes>')
@@ -206,7 +206,7 @@ def ver_calendario(anio, mes):
         mes_numero=mes_numero
     )
 
-# RUTA PARA SELECCIONAR MES Y AÑO (CORREGIDA)
+# RUTA PARA SELECCIONAR MES Y AÑO
 @app.route('/seleccionar_mes', methods=['GET', 'POST'])
 @login_required
 def seleccionar_mes():
@@ -219,11 +219,10 @@ def seleccionar_mes():
     ]
     return render_template('seleccionar_mes.html', anio_actual=anio_actual, meses=meses_info)
 
-
 # RUTA PARA REGISTRAR ASISTENCIA DESDE EL CALENDARIO
-@app.route('/registro_asistencia_calendario/<string:RUT>/<int:dia>/<int:mes>/<int:anio>', methods=['GET', 'POST'])
+@app.route('/registrar_asistencia_calendario/<string:RUT>/<int:dia>/<int:mes>/<int:anio>', methods=['GET', 'POST'])
 @login_required
-def registro_asistencia_calendario(RUT, dia, mes, anio):
+def registrar_asistencia_calendario(RUT, dia, mes, anio):
     if not current_user.tiene_rol('administrador'):
         return "Acceso denegado", 403
 
@@ -253,7 +252,7 @@ def registro_asistencia_calendario(RUT, dia, mes, anio):
 
     nombre_mes = NOMBRES_MESES[mes - 1]
     return render_template(
-        'registro_asistencia_calendario.html',
+        'registrar_asistencia_calendario.html',
         empleado=empleado,
         dia=dia,
         mes=nombre_mes,
