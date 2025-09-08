@@ -172,8 +172,20 @@ def ver_calendario(anio, mes):
     # Obtener todos los empleados y sus asistencias para el mes seleccionado
     cursor = db.cursor(dictionary=True)
     
-    # Consulta corregida para ordenar por 'servicio' y 'nombre_completo'
-    cursor.execute("SELECT RUT, nombre_completo, servicio FROM usuarios ORDER BY servicio ASC, nombre_completo ASC")
+    # Consulta corregida para ordenar por el orden de servicio deseado y nombre completo
+    cursor.execute("""
+        SELECT RUT, nombre_completo, servicio 
+        FROM usuarios 
+        ORDER BY 
+            CASE 
+                WHEN servicio = 'Bloqueo' THEN 1
+                WHEN servicio = 'Ingreso' THEN 2
+                WHEN servicio = 'Mesa Central' THEN 3
+                WHEN servicio = 'HLF' THEN 4
+                ELSE 5
+            END,
+            nombre_completo ASC
+    """)
     empleados_db = cursor.fetchall()
 
     calendario = {}
