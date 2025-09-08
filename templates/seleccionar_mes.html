@@ -2,28 +2,36 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Seleccionar Mes</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Seleccionar Mes y Año</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
 </head>
 <body>
-    <div class="form-container">
-        <h1>Seleccionar Mes para Ver Asistencia</h1>
-        <form action="{{ url_for('seleccionar_mes') }}" method="post">
-            <label for="mes">Mes:</label>
-            <select id="mes" name="mes" required>
-                {% set meses = ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"] %}
-                {% for i in range(1, 13) %}
-                    <option value="{{ i }}">{{ meses[i-1] }}</option>
+    <header>
+        <h1>Seleccionar Mes y Año</h1>
+        <nav>
+            <a href="{{ url_for('admin_view') }}" class="back-button">Volver al Panel</a>
+        </nav>
+    </header>
+
+    <main>
+        <form action="{{ url_for('ver_calendario', anio=anio_actual, mes=1) }}" method="get" class="form-container">
+            <label for="anio">Año:</label>
+            <select name="anio" id="anio">
+                {% for anio in range(2023, anio_actual + 2) %}
+                <option value="{{ anio }}" {% if anio == anio_actual %}selected{% endif %}>{{ anio }}</option>
                 {% endfor %}
             </select>
-            
-            <label for="anio">Año:</label>
-            <input type="number" id="anio" name="anio" value="{{ 2025 }}" required>
-            
+            <br>
+            <label for="mes">Mes:</label>
+            <select name="mes" id="mes">
+                {% for mes in meses %}
+                <option value="{{ mes.numero }}">{{ mes.nombre }}</option>
+                {% endfor %}
+            </select>
+            <br>
             <button type="submit">Ver Calendario</button>
         </form>
-        <br>
-        <a href="{{ url_for('admin_view') }}" class="back-button">Volver al panel</a>
-    </div>
+    </main>
 </body>
 </html>
