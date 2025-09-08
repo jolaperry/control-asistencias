@@ -234,6 +234,11 @@ def seleccionar_mes():
     if not current_user.tiene_rol('administrador'):
         return "Acceso denegado", 403
     
+    if request.method == 'POST':
+        mes_seleccionado = int(request.form['mes'])
+        anio_seleccionado = int(request.form['anio'])
+        return redirect(url_for('ver_calendario', anio=anio_seleccionado, mes=mes_seleccionado))
+
     anio_actual = date.today().year
     meses_info = [
         {'numero': i + 1, 'nombre': NOMBRES_MESES[i]} for i in range(12)
