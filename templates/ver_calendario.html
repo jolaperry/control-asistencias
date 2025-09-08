@@ -18,8 +18,11 @@
         <table>
             <thead>
                 <tr>
-                    <th>Nombre</th>
-                    <th>Servicio</th>
+                    <th rowspan="2">Nombre</th>
+                    <th rowspan="2">Servicio</th>
+                    <th colspan="{{ dias|length }}">Días del Mes</th>
+                </tr>
+                <tr>
                     {% for dia in dias %}
                     <th class="dia-semana">{{ dia }}</th>
                     {% endfor %}
