@@ -5,6 +5,7 @@ import pandas as pd
 import calendar
 from datetime import date
 import os
+import json
 
 # Inicializar la aplicación de Flask
 app = Flask(__name__)
@@ -245,48 +246,30 @@ def seleccionar_mes():
     ]
     return render_template('seleccionar_mes.html', anio_actual=anio_actual, meses=meses_info)
 
-# RUTA PARA REGISTRAR ASISTENCIA DESDE EL CALENDARIO
-@app.route('/registrar_asistencia_calendario/<string:RUT>/<int:dia>/<int:mes>/<int:anio>', methods=['GET', 'POST'])
+# RUTA PARA PROCESAR EL REGISTRO DE ASISTENCIA CON AJAX
+@app.route('/registrar_asistencia_ajax', methods=['POST'])
 @login_required
-def registrar_asistencia_calendario(RUT, dia, mes, anio):
+def registrar_asistencia_ajax():
     if not current_user.tiene_rol('administrador'):
         return "Acceso denegado", 403
 
-    fecha = date(anio, mes, dia)
-    
-    if request.method == 'POST':
-        estado = request.form['estado']
-        hora_entrada = request.form.get('hora_entrada')
-        hora_salida = request.form.get('hora_salida')
-        
-        if not hora_entrada:
-            hora_entrada = None
-        if not hora_salida:
-            hora_salida = None
+    data = request.json
+    RUT = data['RUT']
+    fecha = data['fecha']
+    estado = data['estado']
+    hora_entrada = data.get('hora_entrada')
+    hora_salida = data.get('hora_salida')
 
-        cursor = db.cursor()
-        sql = "INSERT INTO asistencias (RUT, fecha, estado, hora_entrada, hora_salida) VALUES (%s, %s, %s, %s, %s)"
-        cursor.execute(sql, (RUT, fecha, estado, hora_entrada, hora_salida))
-        db.commit()
-        cursor.close()
-        return redirect(url_for('ver_calendario', anio=anio, mes=mes))
-    
-    cursor = db.cursor(dictionary=True)
-    cursor.execute("SELECT * FROM usuarios WHERE RUT = %s", (RUT,))
-    empleado = cursor.fetchone()
+    cursor = db.cursor()
+    sql = "INSERT INTO asistencias (RUT, fecha, estado, hora_entrada, hora_salida) VALUES (%s, %s, %s, %s, %s)"
+    cursor.execute(sql, (RUT, fecha, estado, hora_entrada, hora_salida))
+    db.commit()
     cursor.close()
 
-    nombre_mes = NOMBRES_MESES[mes - 1]
-    return render_template(
-        'registrar_asistencia_calendario.html',
-        empleado=empleado,
-        dia=dia,
-        mes=nombre_mes,
-        anio=anio,
-        mes_numero=mes
-    )
+    return json.dumps({'success': True}), 200, {'ContentType': 'application/json'}
 
-# RUTA PARA EXPORTAR DATOS A EXCEL
+
+# VISTA PARA EXPORTAR DATOS A EXCEL
 @app.route('/exportar_excel')
 @login_required
 def exportar_excel():
