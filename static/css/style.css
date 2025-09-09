@@ -49,7 +49,6 @@ table td a {
     width: 100%;
     height: 100%;
     text-decoration: none;
-    color: #333;
     transition: background-color 0.3s;
 }
 
@@ -64,15 +63,6 @@ table td a:hover {
     font-weight: bold;
 }
 
-.estado-dia_libre,
-.estado-permisos_especiales/legales,
-.estado-vacaciones,
-.estado-dias_capacitacion_ingreso {
-    color: black;
-    background-color: transparent;
-    font-weight: bold;
-}
-
 .estado-ausencia {
     color: #9c0006;
     background-color: #ffc7ce;
@@ -81,7 +71,7 @@ table td a:hover {
 
 .estado-licencia_medica {
     color: red;
-    background-color: #8fbc8f; /* Verde oliva oscuro */
+    background-color: #8fbc8f;
     font-weight: bold;
 }
 
@@ -91,11 +81,51 @@ table td a:hover {
     font-weight: bold;
 }
 
+.estado-dia_libre,
+.estado-permisos_especiales/legales,
+.estado-vacaciones,
+.estado-dias_capacitacion_ingreso {
+    color: black;
+    background-color: transparent;
+    font-weight: bold;
+}
+
 .estado-ninguno {
     background-color: transparent;
     color: #007BFF;
     font-size: 1.5em;
     font-weight: bold;
+}
+
+/* Nuevos estilos para el menú desplegable */
+.dropdown-menu {
+    position: absolute;
+    display: none;
+    background-color: #fff;
+    border: 1px solid #ccc;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    z-index: 100;
+    padding: 10px;
+    border-radius: 5px;
+}
+
+.dropdown-menu.active {
+    display: block;
+}
+
+.dropdown-menu form {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.dropdown-menu button {
+    background-color: #007BFF;
+    color: white;
+    border: none;
+    padding: 5px;
+    border-radius: 3px;
+    cursor: pointer;
 }
 
 /* Otros estilos */
