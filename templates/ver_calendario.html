@@ -49,7 +49,24 @@
                                 {% endif %}
                             </a>
                         {% else %}
-                            <a href="{{ url_for('registrar_asistencia_calendario', RUT=rut, dia=dia, mes=mes_numero, anio=anio) }}" class="estado-ninguno">+</a>
+                            <a href="#" class="estado-ninguno open-dropdown" data-rut="{{ rut }}" data-dia="{{ dia }}" data-mes="{{ mes_numero }}" data-anio="{{ anio }}">+</a>
+                            <div class="dropdown-menu">
+                                <form class="asistencia-form" data-rut="{{ rut }}" data-dia="{{ dia }}" data-mes="{{ mes_numero }}" data-anio="{{ anio }}">
+                                    <label for="estado">Estado:</label>
+                                    <select name="estado" required>
+                                        <option value="Presente">P</option>
+                                        <option value="Día libre">DL</option>
+                                        <option value="Permisos Especiales/legales">PE</option>
+                                        <option value="Vacaciones">V</option>
+                                        <option value="Días capacitación ingreso">CAP</option>
+                                        <option value="Ausencia">A</option>
+                                        <option value="Licencia Médica">L</option>
+                                        <option value="Renuncia/Desvinculación">R</option>
+                                    </select>
+                                    <br>
+                                    <button type="submit">Guardar</button>
+                                </form>
+                            </div>
                         {% endif %}
                     </td>
                     {% endfor %}
@@ -58,5 +75,74 @@
             </tbody>
         </table>
     </main>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            document.querySelectorAll('.open-dropdown').forEach(function(link) {
+                link.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    
+                    // Oculta cualquier otro menú desplegable abierto
+                    document.querySelectorAll('.dropdown-menu').forEach(function(menu) {
+                        if (menu !== link.nextElementSibling && menu.classList.contains('active')) {
+                            menu.classList.remove('active');
+                        }
+                    });
+                    
+                    // Muestra/oculta el menú desplegable actual
+                    const dropdown = link.nextElementSibling;
+                    dropdown.classList.toggle('active');
+                });
+            });
+
+            document.querySelectorAll('.asistencia-form').forEach(function(form) {
+                form.addEventListener('submit', function(e) {
+                    e.preventDefault();
+                    
+                    const rut = this.getAttribute('data-rut');
+                    const dia = this.getAttribute('data-dia');
+                    const mes = this.getAttribute('data-mes');
+                    const anio = this.getAttribute('data-anio');
+                    const estado = this.querySelector('select[name="estado"]').value;
+                    const fecha = `${anio}-${String(mes).padStart(2, '0')}-${String(dia).padStart(2, '0')}`;
+                    
+                    fetch('/registrar_asistencia_ajax', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({
+                            RUT: rut,
+                            fecha: fecha,
+                            estado: estado
+                        }),
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            alert('Asistencia registrada con éxito!');
+                            // Recargar la página para ver los cambios
+                            window.location.reload();
+                        } else {
+                            alert('Error al registrar la asistencia.');
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        alert('Error al registrar la asistencia.');
+                    });
+                });
+            });
+
+            // Ocultar menú si se hace clic fuera
+            document.addEventListener('click', function(e) {
+                if (!e.target.closest('.dropdown-menu') && !e.target.closest('.open-dropdown')) {
+                    document.querySelectorAll('.dropdown-menu').forEach(function(menu) {
+                        menu.classList.remove('active');
+                    });
+                }
+            });
+        });
+    </script>
 </body>
 </html>
