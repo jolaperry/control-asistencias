@@ -57,37 +57,48 @@ table td a:hover {
     background-color: #f0f0f0;
 }
 
-/* Estilos para los estados de asistencia y sus siglas */
+/* Estilos para el relleno de la celda completa según el estado */
 .estado-presente {
-    color: black;
     background-color: transparent;
-    font-weight: bold;
 }
-
 .estado-ausencia {
-    color: #9c0006;
     background-color: #ffc7ce;
-    font-weight: bold;
 }
-
 .estado-licencia_medica {
-    color: red;
     background-color: #8fbc8f;
-    font-weight: bold;
 }
-
 .estado-renuncia_desvinculacion {
-    color: red;
     background-color: transparent;
-    font-weight: bold;
 }
-
 .estado-dia_libre,
 .estado-permisos_especiales_legales,
 .estado-vacaciones,
 .estado-dias_capacitacion_ingreso {
-    color: black;
     background-color: transparent;
+}
+
+/* Estilos para el color de la letra dentro de cada celda */
+.estado-presente a {
+    color: black;
+    font-weight: bold;
+}
+.estado-ausencia a {
+    color: #9c0006;
+    font-weight: bold;
+}
+.estado-licencia_medica a {
+    color: red;
+    font-weight: bold;
+}
+.estado-renuncia_desvinculacion a {
+    color: red;
+    font-weight: bold;
+}
+.estado-dia_libre a,
+.estado-permisos_especiales_legales a,
+.estado-vacaciones a,
+.estado-dias_capacitacion_ingreso a {
+    color: black;
     font-weight: bold;
 }
 
