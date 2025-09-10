@@ -24,7 +24,7 @@ main {
     padding: 2rem;
 }
 
-/* Estilos de la tabla */
+/* Estilos de la tabla del calendario */
 table {
     width: 100%;
     border-collapse: collapse;
@@ -37,6 +37,7 @@ table th, table td {
     padding: 10px;
     border: 1px solid #ddd;
     text-align: center;
+    position: relative; /* Necesario para posicionar el icono de comentario */
 }
 
 table th {
@@ -56,7 +57,7 @@ table td a:hover {
     background-color: #f0f0f0;
 }
 
-/* Estilos para los estados de asistencia */
+/* Estilos para los estados de asistencia y sus siglas */
 .estado-presente {
     color: black;
     background-color: transparent;
@@ -75,14 +76,14 @@ table td a:hover {
     font-weight: bold;
 }
 
-.estado-renuncia/desvinculacion {
+.estado-renuncia_desvinculacion {
     color: red;
     background-color: transparent;
     font-weight: bold;
 }
 
 .estado-dia_libre,
-.estado-permisos_especiales/legales,
+.estado-permisos_especiales_legales,
 .estado-vacaciones,
 .estado-dias_capacitacion_ingreso {
     color: black;
@@ -97,7 +98,7 @@ table td a:hover {
     font-weight: bold;
 }
 
-/* Nuevos estilos para el menú desplegable */
+/* Estilos para el menú desplegable */
 .dropdown-menu {
     position: absolute;
     display: none;
@@ -107,6 +108,9 @@ table td a:hover {
     z-index: 100;
     padding: 10px;
     border-radius: 5px;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
 }
 
 .dropdown-menu.active {
@@ -126,6 +130,15 @@ table td a:hover {
     padding: 5px;
     border-radius: 3px;
     cursor: pointer;
+}
+
+/* Estilos para la marca de comentario */
+.has-comment {
+    position: absolute;
+    top: 2px;
+    right: 2px;
+    font-size: 0.8em;
+    cursor: help;
 }
 
 /* Otros estilos */
