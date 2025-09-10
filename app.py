@@ -201,9 +201,9 @@ def ver_calendario(anio, mes):
         empleado['asistencias'] = {}
         calendario[empleado['RUT']] = empleado
 
-    # Obtener asistencias del mes
+    # Obtener asistencias del mes, incluyendo el nuevo campo de comentario
     cursor.execute(
-        "SELECT RUT, DAY(fecha) as dia, estado, id_asistencia FROM asistencias WHERE YEAR(fecha) = %s AND MONTH(fecha) = %s",
+        "SELECT RUT, DAY(fecha) as dia, estado, id_asistencia, comentario FROM asistencias WHERE YEAR(fecha) = %s AND MONTH(fecha) = %s",
         (anio, mes)
     )
     asistencias_db = cursor.fetchall()
@@ -215,7 +215,8 @@ def ver_calendario(anio, mes):
         if rut in calendario:
             calendario[rut]['asistencias'][dia] = {
                 'estado': asistencia['estado'],
-                'id_asistencia': asistencia['id_asistencia']
+                'id_asistencia': asistencia['id_asistencia'],
+                'comentario': asistencia['comentario']
             }
 
     return render_template(
@@ -257,12 +258,13 @@ def registrar_asistencia_ajax():
     RUT = data['RUT']
     fecha = data['fecha']
     estado = data['estado']
+    comentario = data['comentario'] # Recibimos el comentario
     hora_entrada = data.get('hora_entrada')
     hora_salida = data.get('hora_salida')
 
     cursor = db.cursor()
-    sql = "INSERT INTO asistencias (RUT, fecha, estado, hora_entrada, hora_salida) VALUES (%s, %s, %s, %s, %s)"
-    cursor.execute(sql, (RUT, fecha, estado, hora_entrada, hora_salida))
+    sql = "INSERT INTO asistencias (RUT, fecha, estado, hora_entrada, hora_salida, comentario) VALUES (%s, %s, %s, %s, %s, %s)"
+    cursor.execute(sql, (RUT, fecha, estado, hora_entrada, hora_salida, comentario))
     db.commit()
     cursor.close()
 
