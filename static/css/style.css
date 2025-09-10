@@ -141,6 +141,15 @@ table td a:hover {
     cursor: help;
 }
 
+/* Estilo para las filas que marcan el final de un grupo de servicio */
+.group-end-row {
+    border-bottom: 3px solid #ccc; /* Un borde gris más grueso para la separación */
+}
+
+.group-end-row td {
+    padding-bottom: 15px; /* Más espacio entre las celdas al final del grupo */
+}
+
 /* Otros estilos */
 .back-button {
     background-color: #0056b3;
