@@ -1,0 +1,66 @@
+<table>
+    <thead>
+        <tr>
+            <th rowspan="2">Nombre</th>
+            <th rowspan="2">Servicio</th>
+            <th colspan="{{ dias|length }}"></th>
+        </tr>
+        <tr>
+            {% for dia in dias %}
+            <th class="dia-semana">{{ dias_semana_abrev[loop.index0] }}<br>{{ dia }}</th>
+            {% endfor %}
+        </tr>
+    </thead>
+    <tbody>
+        {% for rut, empleado in calendario.items() %}
+        {% set siguiente_empleado = loop.nextitem %}
+        <tr {% if siguiente_empleado and siguiente_empleado[1].servicio != empleado.servicio %}class="group-end-row"{% endif %}>
+            <td>{{ empleado.nombre_completo }}</td>
+            <td>{{ empleado.servicio }}</td>
+            {% for dia in dias %}
+            <td class="estado-{{ (empleado.asistencias[dia].estado if dia in empleado.asistencias else 'ninguno') | replace(' ', '_') | replace('/', '_') | lower }}">
+                {% if dia in empleado.asistencias %}
+                    <a href="{{ url_for('editar_asistencia_calendario', id_asistencia=empleado.asistencias[dia].id_asistencia, anio=anio, mes=mes_numero) }}">
+                        {% if empleado.asistencias[dia].comentario %}
+                            <span class="has-comment" title="{{ empleado.asistencias[dia].comentario }}">💬</span>
+                        {% endif %}
+                        {% if empleado.asistencias[dia].estado == 'Presente' %} P
+                        {% elif empleado.asistencias[dia].estado == 'Día libre' %} DL
+                        {% elif empleado.asistencias[dia].estado == 'Permisos Especiales/legales' %} PE
+                        {% elif empleado.asistencias[dia].estado == 'Vacaciones' %} V
+                        {% elif empleado.asistencias[dia].estado == 'Días capacitación ingreso' %} CAP
+                        {% elif empleado.asistencias[dia].estado == 'Ausencia' %} A
+                        {% elif empleado.asistencias[dia].estado == 'Licencia Médica' %} L
+                        {% elif empleado.asistencias[dia].estado == 'Renuncia/Desvinculación' %} R
+                        {% else %} {{ empleado.asistencias[dia].estado }}
+                        {% endif %}
+                    </a>
+                {% else %}
+                    <a href="#" class="estado-ninguno open-dropdown" data-rut="{{ rut }}" data-dia="{{ dia }}" data-mes="{{ mes_numero }}" data-anio="{{ anio }}">+</a>
+                    <div class="dropdown-menu">
+                        <form class="asistencia-form" data-rut="{{ rut }}" data-dia="{{ dia }}" data-mes="{{ mes_numero }}" data-anio="{{ anio }}">
+                            <label for="estado">Estado:</label>
+                            <select name="estado" required>
+                                <option value="Presente">P</option>
+                                <option value="Día libre">DL</option>
+                                <option value="Permisos Especiales/legales">PE</option>
+                                <option value="Vacaciones">V</option>
+                                <option value="Días capacitación ingreso">CAP</option>
+                                <option value="Ausencia">A</option>
+                                <option value="Licencia Médica">L</option>
+                                <option value="Renuncia/Desvinculación">R</option>
+                            </select>
+                            <br>
+                            <label for="comentario">Comentario:</label>
+                            <input type="text" name="comentario" placeholder="Motivo de la asistencia">
+                            <br>
+                            <button type="submit">Guardar</button>
+                        </form>
+                    </div>
+                {% endif %}
+            </td>
+            {% endfor %}
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
