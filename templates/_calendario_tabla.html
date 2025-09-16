@@ -2,6 +2,7 @@
     <thead>
         <tr>
             <th>Nombre</th>
+            <th>Servicio</th>
             {% for dia in dias %}
                 <th class="day-header">
                     <span>{{ dias_semana_abrev[loop.index0] }}</span>
@@ -14,21 +15,17 @@
         {% for rut, empleado in calendario.items() %}
         <tr>
             <td>{{ empleado.nombre_completo }}</td>
+            <td>{{ empleado.servicio }}</td>
             {% for dia in dias %}
                 <td class="day-cell">
                     {% set asistencia_dia = empleado.asistencias.get(dia) %}
                     {% if asistencia_dia %}
-                        {% if asistencia_dia.estado == 'Asistio' %}
-                            <a href="{{ url_for('editar_asistencia_calendario', id_asistencia=asistencia_dia.id_asistencia, anio=anio, mes=mes_numero) }}" class="asistio" title="Comentario: {{ asistencia_dia.comentario }}">{{ asistencia_dia.estado }}</a>
-                        {% elif asistencia_dia.estado == 'Atraso' %}
-                            <a href="{{ url_for('editar_asistencia_calendario', id_asistencia=asistencia_dia.id_asistencia, anio=anio, mes=mes_numero) }}" class="atraso" title="Comentario: {{ asistencia_dia.comentario }}">{{ asistencia_dia.estado }}</a>
-                        {% elif asistencia_dia.estado == 'Falta' %}
-                            <a href="{{ url_for('editar_asistencia_calendario', id_asistencia=asistencia_dia.id_asistencia, anio=anio, mes=mes_numero) }}" class="falta" title="Comentario: {{ asistencia_dia.comentario }}">{{ asistencia_dia.estado }}</a>
-                        {% elif asistencia_dia.estado == 'No Aplica' %}
-                            <a href="{{ url_for('editar_asistencia_calendario', id_asistencia=asistencia_dia.id_asistencia, anio=anio, mes=mes_numero) }}" class="no-aplica" title="Comentario: {{ asistencia_dia.comentario }}">{{ asistencia_dia.estado }}</a>
-                        {% endif %}
+                        {% set estado_class = asistencia_dia.estado | lower | replace(' ', '-') %}
+                        <a href="{{ url_for('editar_asistencia_calendario', id_asistencia=asistencia_dia.id_asistencia, anio=anio, mes=mes_numero) }}" class="{{ estado_class }}" title="Comentario: {{ asistencia_dia.comentario }}">{{ asistencia_dia.estado }}</a>
                     {% else %}
-                        <a href="#" class="no-registro open-modal" data-rut="{{ rut }}" data-dia="{{ dia }}" data-mes="{{ mes_numero }}" data-anio="{{ anio }}"><span>+</span></a>
+                        <a href="#" class="no-registro open-modal" data-rut="{{ rut }}" data-dia="{{ dia }}" data-mes="{{ mes_numero }}" data-anio="{{ anio }}">
+                            <span class="plus-sign">+</span>
+                        </a>
                     {% endif %}
                 </td>
             {% endfor %}
@@ -50,10 +47,14 @@
             
             <label for="modal-estado">Estado:</label>
             <select id="modal-estado" name="estado">
-                <option value="Asistio">Asistió</option>
-                <option value="Atraso">Atraso</option>
-                <option value="Falta">Falta</option>
-                <option value="No Aplica">No Aplica</option>
+                <option value="P">Presente (P)</option>
+                <option value="DL">Día libre (DL)</option>
+                <option value="PE">Permisos Especiales/legales (PE)</option>
+                <option value="V">Vacaciones (V)</option>
+                <option value="CAP">Días capacitación ingreso (CAP)</option>
+                <option value="A">Ausencia (A)</option>
+                <option value="L">Licencia Médica (L)</option>
+                <option value="R">Renuncia/Desvinculación (R)</option>
             </select>
 
             <label for="modal-comentario">Comentario:</label>
