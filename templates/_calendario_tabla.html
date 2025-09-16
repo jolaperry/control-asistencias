@@ -28,7 +28,7 @@
                             <a href="{{ url_for('editar_asistencia_calendario', id_asistencia=asistencia_dia.id_asistencia, anio=anio, mes=mes_numero) }}" class="no-aplica" title="Comentario: {{ asistencia_dia.comentario }}">{{ asistencia_dia.estado }}</a>
                         {% endif %}
                     {% else %}
-                        <a href="#" class="no-registro open-modal" data-rut="{{ rut }}" data-dia="{{ dia }}" data-mes="{{ mes_numero }}" data-anio="{{ anio }}">Registrar</a>
+                        <a href="#" class="no-registro open-modal" data-rut="{{ rut }}" data-dia="{{ dia }}" data-mes="{{ mes_numero }}" data-anio="{{ anio }}"><span>+</span></a>
                     {% endif %}
                 </td>
             {% endfor %}
@@ -77,12 +77,13 @@
 
         // Muestra el modal al hacer clic en un enlace de 'Registrar'
         document.getElementById('contenedor-tabla').addEventListener('click', function(e) {
-            if (e.target.classList.contains('open-modal')) {
+            if (e.target.classList.contains('open-modal') || e.target.closest('.open-modal')) {
                 e.preventDefault();
-                var rut = e.target.getAttribute('data-rut');
-                var dia = e.target.getAttribute('data-dia');
-                var mes = e.target.getAttribute('data-mes');
-                var anio = e.target.getAttribute('data-anio');
+                const linkElement = e.target.closest('.open-modal');
+                var rut = linkElement.getAttribute('data-rut');
+                var dia = linkElement.getAttribute('data-dia');
+                var mes = linkElement.getAttribute('data-mes');
+                var anio = linkElement.getAttribute('data-anio');
 
                 // Asegúrate de que el mes y el día tengan el formato de dos dígitos
                 var mes_formato = String(mes).padStart(2, '0');
