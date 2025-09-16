@@ -228,9 +228,7 @@ def ver_calendario(anio=None, mes=None):
         {'numero': i + 1, 'nombre': NOMBRES_MESES_CORREGIDO[i]} for i in range(12)
     ]
     
-    # Generamos una lista de años para el desplegable
-    anios_rango = list(range(anio_actual - 5, anio_actual + 6))
-
+    # Renderizar el fragmento de la tabla, asegurando que se pasen las variables necesarias
     rendered_calendar = render_template(
         '_calendario_tabla.html',
         calendario=calendario,
@@ -250,8 +248,7 @@ def ver_calendario(anio=None, mes=None):
             mes_numero=mes,
             anio_actual=anio_actual,
             meses=meses_info,
-            rendered_calendar=rendered_calendar,
-            anios_rango=anios_rango
+            rendered_calendar=rendered_calendar
         )
 
 
