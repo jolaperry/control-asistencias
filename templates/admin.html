@@ -11,53 +11,14 @@
         <h1>Panel de Administración</h1>
         <nav>
             <a href="{{ url_for('logout') }}" class="back-button">Cerrar Sesión</a>
-            <a href="{{ url_for('exportar_excel') }}" class="back-button">Exportar a Excel</a>
-            <a href="{{ url_for('seleccionar_mes') }}" class="back-button">Ver Calendario</a>
         </nav>
     </header>
-    
-    <main>
-        <h2>Asistencias</h2>
-        <table>
-            <thead>
-                <tr>
-                    <th>RUT</th>
-                    <th>Nombre</th>
-                    <th>Fecha</th>
-                    <th>Hora de Entrada</th>
-                    <th>Hora de Salida</th>
-                    <th>Estado</th>
-                    <th>Acciones</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for registro in registros %}
-                <tr>
-                    <td>{{ registro.RUT }}</td>
-                    <td>{{ registro.nombre_completo }}</td>
-                    <td>{{ registro.fecha }}</td>
-                    <td>{{ registro.hora_entrada }}</td>
-                    <td>{{ registro.hora_salida }}</td>
-                    <td class="estado-{{ registro.estado | replace(' ', '_') | replace('/', '_') | lower }}">
-                        {% if registro.estado == 'Presente' %} P
-                        {% elif registro.estado == 'Día libre' %} DL
-                        {% elif registro.estado == 'Permisos Especiales/legales' %} PE
-                        {% elif registro.estado == 'Vacaciones' %} V
-                        {% elif registro.estado == 'Días capacitación ingreso' %} CAP
-                        {% elif registro.estado == 'Ausencia' %} A
-                        {% elif registro.estado == 'Licencia Médica' %} L
-                        {% elif registro.estado == 'Renuncia/Desvinculación' %} R
-                        {% else %} {{ registro.estado }}
-                        {% endif %}
-                    </td>
-                    <td class="acciones">
-                        <a href="{{ url_for('editar_asistencia', id_asistencia=registro.id_asistencia) }}">Editar</a>
-                        <a href="{{ url_for('eliminar_registro', id_asistencia=registro.id_asistencia) }}">Eliminar</a>
-                    </td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+
+    <main class="admin-main">
+        <div class="admin-buttons-container">
+            <a href="{{ url_for('seleccionar_mes') }}" class="admin-button">VER CALENDARIO</a>
+            <a href="{{ url_for('exportar_excel') }}" class="admin-button">EXPORTAR A EXCEL</a>
+        </div>
     </main>
 </body>
 </html>
