@@ -3,62 +3,73 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Calendario - {{ mes }} {{ anio }}</title>
+    <title>Asistencias</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 </head>
 <body>
-    <header>
-        <h1>Asistencias - {{ mes }} {{ anio }}</h1>
-        <nav>
-            <a href="{{ url_for('admin_view') }}" class="back-button">Volver a Administración</a>
+    <div class="container">
+        <h1 id="titulo_calendario">Asistencias - {{ mes }} {{ anio }}</h1>
+
+        <nav class="calendar-nav">
+            <ul>
+                {% for mes_info in meses %}
+                    <li>
+                        <a href="{{ url_for('ver_calendario', anio=anio, mes=mes_info.numero) }}" class="mes-link {% if mes_info.numero == mes_numero %}active{% endif %}">
+                            {{ mes_info.nombre }}
+                        </a>
+                    </li>
+                {% endfor %}
+            </ul>
         </nav>
-    </header>
 
-    <main>
-        <div class="selection-container">
-            <form id="month-form">
-                <label for="mes">Mes:</label>
-                <select id="mes" name="mes">
-                    {% for m in meses %}
-                    <option value="{{ m.numero }}" {% if m.numero == mes_numero %}selected{% endif %}>{{ m.nombre }}</option>
-                    {% endfor %}
-                </select>
-                <label for="anio">Año:</label>
-                <input type="number" id="anio" name="anio" value="{{ anio }}" min="2020" max="2050">
-            </form>
+        <div id="contenedor-tabla">
+            {{ rendered_calendar | safe }}
         </div>
-        
-        <div id="calendar-table-container">
-            {{ rendered_calendar|safe }}
+
+        <div class="footer-buttons">
+            <a href="{{ url_for('admin_view') }}" class="btn">Volver al Panel</a>
         </div>
-    </main>
-    
+    </div>
+
     <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            const monthForm = document.getElementById('month-form');
-            const mesSelect = document.getElementById('mes');
-            const anioInput = document.getElementById('anio');
-            const calendarContainer = document.getElementById('calendar-table-container');
+        document.addEventListener("DOMContentLoaded", function() {
+            const enlacesMes = document.querySelectorAll(".mes-link");
+            const contenedorTabla = document.getElementById("contenedor-tabla");
+            const tituloCalendario = document.getElementById("titulo_calendario");
 
-            function updateCalendar() {
-                const anio = anioInput.value;
-                const mes = mesSelect.value;
-                
-                fetch(`/calendario/${anio}/${mes}`, {
-                    headers: {
-                        'X-Requested-With': 'XMLHttpRequest'
-                    }
-                })
-                .then(response => response.text())
-                .then(html => {
-                    calendarContainer.innerHTML = html;
-                })
-                .catch(error => console.error('Error al actualizar el calendario:', error));
+            enlacesMes.forEach(enlace => {
+                enlace.addEventListener("click", function(event) {
+                    event.preventDefault();
+                    const url = this.href;
+
+                    fetch(url, {
+                        headers: {
+                            "X-Requested-With": "XMLHttpRequest"
+                        }
+                    })
+                    .then(response => response.text())
+                    .then(html => {
+                        contenedorTabla.innerHTML = html;
+                        
+                        // Extraer el mes y el año de la URL para actualizar el título
+                        const partesURL = url.split('/');
+                        const anio = partesURL[partesURL.length - 2];
+                        const mes = partesURL[partesURL.length - 1];
+                        const nombreMes = obtenerNombreMes(mes);
+                        
+                        tituloCalendario.textContent = `Asistencias - ${nombreMes} ${anio}`;
+                    })
+                    .catch(error => console.error("Error:", error));
+                });
+            });
+            
+            // Función para obtener el nombre del mes
+            function obtenerNombreMes(numeroMes) {
+                const nombresMeses = ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"];
+                return nombresMeses[parseInt(numeroMes) - 1];
             }
-
-            mesSelect.addEventListener('change', updateCalendar);
-            anioInput.addEventListener('change', updateCalendar);
         });
     </script>
+
 </body>
 </html>
