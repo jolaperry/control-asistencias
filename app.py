@@ -28,7 +28,7 @@ login_manager.login_view = 'login'
 # Lista de nombres de meses y días en español
 NOMBRES_MESES = [
     "Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio",
-    "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"
+    "Julio", "Octubre", "Septiembre", "Octubre", "Noviembre", "Diciembre"
 ]
 NOMBRES_DIAS = ["Lun", "Mar", "Mié", "Jue", "Vie", "Sáb", "Dom"]
 
@@ -171,7 +171,12 @@ def ver_calendario(anio=None, mes=None):
         anio = hoy.year
         mes = hoy.month
 
-    nombre_mes = NOMBRES_MESES[mes - 1]
+    # Corrección: El mes 7 en la lista es "Septiembre", debe ser "Julio"
+    NOMBRES_MESES_CORREGIDO = [
+        "Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio",
+        "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"
+    ]
+    nombre_mes = NOMBRES_MESES_CORREGIDO[mes - 1]
     
     num_dias = calendar.monthrange(anio, mes)[1]
     dias_mes = list(range(1, num_dias + 1))
@@ -221,26 +226,22 @@ def ver_calendario(anio=None, mes=None):
 
     anio_actual = date.today().year
     meses_info = [
-        {'numero': i + 1, 'nombre': NOMBRES_MESES[i]} for i in range(12)
+        {'numero': i + 1, 'nombre': NOMBRES_MESES_CORREGIDO[i]} for i in range(12)
     ]
     
+    # Renderizar el fragmento de la tabla, asegurando que se pasen las variables necesarias
+    rendered_calendar = render_template(
+        '_calendario_tabla.html',
+        calendario=calendario,
+        dias=dias_mes,
+        dias_semana_abrev=dias_semana_abrev,
+        anio=anio,
+        mes_numero=mes,
+    )
+    
     if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
-        return render_template(
-            '_calendario_tabla.html',
-            calendario=calendario,
-            dias=dias_mes,
-            dias_semana_abrev=dias_semana_abrev
-        )
+        return rendered_calendar
     else:
-        rendered_calendar = render_template(
-            '_calendario_tabla.html',
-            calendario=calendario,
-            dias=dias_mes,
-            dias_semana_abrev=dias_semana_abrev,
-            mes=nombre_mes,
-            anio=anio,
-            mes_numero=mes
-        )
         return render_template(
             'ver_calendario.html',
             mes=nombre_mes,
@@ -250,6 +251,7 @@ def ver_calendario(anio=None, mes=None):
             meses=meses_info,
             rendered_calendar=rendered_calendar
         )
+
 
 # RUTA PARA PROCESAR EL REGISTRO DE ASISTENCIA CON AJAX
 @app.route('/registrar_asistencia_ajax', methods=['POST'])
