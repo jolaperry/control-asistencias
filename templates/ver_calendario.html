@@ -44,7 +44,6 @@
                 const anio = anioInput.value;
                 const mes = mesSelect.value;
                 
-                // Hace la solicitud AJAX
                 fetch(`/calendario/${anio}/${mes}`, {
                     headers: {
                         'X-Requested-With': 'XMLHttpRequest'
@@ -52,7 +51,6 @@
                 })
                 .then(response => response.text())
                 .then(html => {
-                    // Reemplaza el contenido del contenedor con el nuevo HTML
                     calendarContainer.innerHTML = html;
                 })
                 .catch(error => console.error('Error al actualizar el calendario:', error));
