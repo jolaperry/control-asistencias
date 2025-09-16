@@ -126,7 +126,7 @@ def eliminar_registro(id_asistencia):
     cursor.close()
     return redirect(url_for('admin_view'))
 
-# VISTA PARA REGISTRAR ASISTENCIA (ADMIN)
+# RUTA PARA REGISTRAR ASISTENCIA (ADMIN)
 @app.route('/registrar_asistencia', methods=['GET', 'POST'])
 @login_required
 def registrar_asistencia():
@@ -158,29 +158,30 @@ def registrar_asistencia():
     cursor.close()
     return render_template('registrar_asistencia.html', empleados=empleados)
 
-# RUTA PARA EL CALENDARIO
+# VISTA UNIFICADA PARA EL CALENDARIO Y SELECCIÓN DE MES
+@app.route('/calendario', methods=['GET', 'POST'])
 @app.route('/calendario/<int:anio>/<int:mes>')
 @login_required
-def ver_calendario(anio, mes):
+def ver_calendario(anio=None, mes=None):
     if not current_user.tiene_rol('administrador'):
         return "Acceso denegado", 403
+    
+    if anio is None or mes is None:
+        hoy = date.today()
+        anio = hoy.year
+        mes = hoy.month
 
     nombre_mes = NOMBRES_MESES[mes - 1]
     
-    # Obtener el número de días del mes
     num_dias = calendar.monthrange(anio, mes)[1]
     dias_mes = list(range(1, num_dias + 1))
     
-    # Obtener las abreviaciones de los días de la semana
     dias_semana_abrev = []
     for dia in dias_mes:
         dia_semana_num = date(anio, mes, dia).weekday()
         dias_semana_abrev.append(NOMBRES_DIAS[dia_semana_num])
     
-    # Obtener todos los empleados y sus asistencias para el mes seleccionado
     cursor = db.cursor(dictionary=True)
-    
-    # Consulta corregida para ordenar por el orden de servicio deseado y nombre completo
     cursor.execute("""
         SELECT RUT, nombre_completo, servicio 
         FROM usuarios 
@@ -201,7 +202,6 @@ def ver_calendario(anio, mes):
         empleado['asistencias'] = {}
         calendario[empleado['RUT']] = empleado
 
-    # Obtener asistencias del mes, incluyendo el nuevo campo de comentario
     cursor.execute(
         "SELECT RUT, DAY(fecha) as dia, estado, id_asistencia, comentario FROM asistencias WHERE YEAR(fecha) = %s AND MONTH(fecha) = %s",
         (anio, mes)
@@ -219,33 +219,32 @@ def ver_calendario(anio, mes):
                 'comentario': asistencia['comentario']
             }
 
-    return render_template(
-        'ver_calendario.html',
-        calendario=calendario,
-        dias=dias_mes,
-        dias_semana_abrev=dias_semana_abrev,
-        mes=nombre_mes,
-        anio=anio,
-        mes_numero=mes
-    )
-
-# RUTA PARA SELECCIONAR MES Y AÑO
-@app.route('/seleccionar_mes', methods=['GET', 'POST'])
-@login_required
-def seleccionar_mes():
-    if not current_user.tiene_rol('administrador'):
-        return "Acceso denegado", 403
-    
-    if request.method == 'POST':
-        mes_seleccionado = int(request.form['mes'])
-        anio_seleccionado = int(request.form['anio'])
-        return redirect(url_for('ver_calendario', anio=anio_seleccionado, mes=mes_seleccionado))
-
     anio_actual = date.today().year
     meses_info = [
         {'numero': i + 1, 'nombre': NOMBRES_MESES[i]} for i in range(12)
     ]
-    return render_template('seleccionar_mes.html', anio_actual=anio_actual, meses=meses_info)
+    
+    if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+        # Si es una solicitud AJAX, solo renderiza la tabla
+        return render_template(
+            '_calendario_tabla.html',
+            calendario=calendario,
+            dias=dias_mes,
+            dias_semana_abrev=dias_semana_abrev
+        )
+    else:
+        # Si es una solicitud normal, renderiza la página completa con el formulario
+        return render_template(
+            'ver_calendario.html',
+            calendario=calendario,
+            dias=dias_mes,
+            dias_semana_abrev=dias_semana_abrev,
+            mes=nombre_mes,
+            anio=anio,
+            mes_numero=mes,
+            anio_actual=anio_actual,
+            meses=meses_info
+        )
 
 # RUTA PARA PROCESAR EL REGISTRO DE ASISTENCIA CON AJAX
 @app.route('/registrar_asistencia_ajax', methods=['POST'])
@@ -258,7 +257,7 @@ def registrar_asistencia_ajax():
     RUT = data['RUT']
     fecha = data['fecha']
     estado = data['estado']
-    comentario = data['comentario'] # Recibimos el comentario
+    comentario = data['comentario']
     hora_entrada = data.get('hora_entrada')
     hora_salida = data.get('hora_salida')
 
@@ -269,7 +268,6 @@ def registrar_asistencia_ajax():
     cursor.close()
 
     return json.dumps({'success': True}), 200, {'ContentType': 'application/json'}
-
 
 # VISTA PARA EXPORTAR DATOS A EXCEL
 @app.route('/exportar_excel')
@@ -333,7 +331,6 @@ def editar_asistencia(id_asistencia):
     cursor.close()
     return render_template('editar_asistencia.html', registro=registro)
 
-
 # VISTA PARA EDITAR ASISTENCIA DESDE EL CALENDARIO
 @app.route('/editar_asistencia_calendario/<int:id_asistencia>/<int:anio>/<int:mes>', methods=['GET', 'POST'])
 @login_required
@@ -359,7 +356,6 @@ def editar_asistencia_calendario(id_asistencia, anio, mes):
     cursor.close()
     return render_template('editar_asistencia_calendario.html', registro=registro, anio=anio, mes_numero=mes)
 
-
 # VISTA PARA ELIMINAR EMPLEADOS
 @app.route('/eliminar_empleado/<string:RUT>')
 @login_required
@@ -379,7 +375,6 @@ def eliminar_empleado(RUT):
     db.commit()
     cursor.close()
     return redirect(url_for('admin_view'))
-
 
 # VISTA PARA AGREGAR NUEVOS EMPLEADOS
 @app.route('/agregar_empleado', methods=['GET', 'POST'])
@@ -431,7 +426,6 @@ def editar_empleado(RUT):
 
     cursor.close()
     return render_template('editar_empleado.html', empleado=empleado)
-
 
 if __name__ == '__main__':
     port = int(os.environ.get('PORT', 5000))
