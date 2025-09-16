@@ -28,7 +28,7 @@ login_manager.login_view = 'login'
 # Lista de nombres de meses y días en español
 NOMBRES_MESES = [
     "Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio",
-    "Julio", "Octubre", "Septiembre", "Octubre", "Noviembre", "Diciembre"
+    "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"
 ]
 NOMBRES_DIAS = ["Lun", "Mar", "Mié", "Jue", "Vie", "Sáb", "Dom"]
 
@@ -171,7 +171,6 @@ def ver_calendario(anio=None, mes=None):
         anio = hoy.year
         mes = hoy.month
 
-    # Corrección: El mes 7 en la lista es "Septiembre", debe ser "Julio"
     NOMBRES_MESES_CORREGIDO = [
         "Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio",
         "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"
@@ -229,7 +228,9 @@ def ver_calendario(anio=None, mes=None):
         {'numero': i + 1, 'nombre': NOMBRES_MESES_CORREGIDO[i]} for i in range(12)
     ]
     
-    # Renderizar el fragmento de la tabla, asegurando que se pasen las variables necesarias
+    # Generamos una lista de años para el desplegable
+    anios_rango = list(range(anio_actual - 5, anio_actual + 6))
+
     rendered_calendar = render_template(
         '_calendario_tabla.html',
         calendario=calendario,
@@ -249,7 +250,8 @@ def ver_calendario(anio=None, mes=None):
             mes_numero=mes,
             anio_actual=anio_actual,
             meses=meses_info,
-            rendered_calendar=rendered_calendar
+            rendered_calendar=rendered_calendar,
+            anios_rango=anios_rango
         )
 
 
