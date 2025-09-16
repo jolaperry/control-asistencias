@@ -225,7 +225,6 @@ def ver_calendario(anio=None, mes=None):
     ]
     
     if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
-        # Si es una solicitud AJAX, solo renderiza la tabla
         return render_template(
             '_calendario_tabla.html',
             calendario=calendario,
@@ -233,17 +232,23 @@ def ver_calendario(anio=None, mes=None):
             dias_semana_abrev=dias_semana_abrev
         )
     else:
-        # Si es una solicitud normal, renderiza la página completa con el formulario
-        return render_template(
-            'ver_calendario.html',
+        rendered_calendar = render_template(
+            '_calendario_tabla.html',
             calendario=calendario,
             dias=dias_mes,
             dias_semana_abrev=dias_semana_abrev,
             mes=nombre_mes,
             anio=anio,
+            mes_numero=mes
+        )
+        return render_template(
+            'ver_calendario.html',
+            mes=nombre_mes,
+            anio=anio,
             mes_numero=mes,
             anio_actual=anio_actual,
-            meses=meses_info
+            meses=meses_info,
+            rendered_calendar=rendered_calendar
         )
 
 # RUTA PARA PROCESAR EL REGISTRO DE ASISTENCIA CON AJAX
