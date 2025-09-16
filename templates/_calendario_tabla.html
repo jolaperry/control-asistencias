@@ -1,66 +1,159 @@
-<table>
+<table class="calendar-table">
     <thead>
         <tr>
-            <th rowspan="2">Nombre</th>
-            <th rowspan="2">Servicio</th>
-            <th colspan="{{ dias|length }}"></th>
-        </tr>
-        <tr>
+            <th>Nombre</th>
             {% for dia in dias %}
-            <th class="dia-semana">{{ dias_semana_abrev[loop.index0] }}<br>{{ dia }}</th>
+                <th class="day-header">
+                    <span>{{ dias_semana_abrev[loop.index0] }}</span>
+                    <span>{{ dia }}</span>
+                </th>
             {% endfor %}
         </tr>
     </thead>
     <tbody>
         {% for rut, empleado in calendario.items() %}
-        {% set siguiente_empleado = loop.nextitem %}
-        <tr {% if siguiente_empleado and siguiente_empleado[1].servicio != empleado.servicio %}class="group-end-row"{% endif %}>
+        <tr>
             <td>{{ empleado.nombre_completo }}</td>
-            <td>{{ empleado.servicio }}</td>
             {% for dia in dias %}
-            <td class="estado-{{ (empleado.asistencias[dia].estado if dia in empleado.asistencias else 'ninguno') | replace(' ', '_') | replace('/', '_') | lower }}">
-                {% if dia in empleado.asistencias %}
-                    <a href="{{ url_for('editar_asistencia_calendario', id_asistencia=empleado.asistencias[dia].id_asistencia, anio=anio, mes=mes_numero) }}">
-                        {% if empleado.asistencias[dia].comentario %}
-                            <span class="has-comment" title="{{ empleado.asistencias[dia].comentario }}">💬</span>
+                <td class="day-cell">
+                    {% set asistencia_dia = empleado.asistencias.get(dia) %}
+                    {% if asistencia_dia %}
+                        {% if asistencia_dia.estado == 'Asistio' %}
+                            <a href="{{ url_for('editar_asistencia_calendario', id_asistencia=asistencia_dia.id_asistencia, anio=anio, mes=mes_numero) }}" class="asistio" title="Comentario: {{ asistencia_dia.comentario }}">{{ asistencia_dia.estado }}</a>
+                        {% elif asistencia_dia.estado == 'Atraso' %}
+                            <a href="{{ url_for('editar_asistencia_calendario', id_asistencia=asistencia_dia.id_asistencia, anio=anio, mes=mes_numero) }}" class="atraso" title="Comentario: {{ asistencia_dia.comentario }}">{{ asistencia_dia.estado }}</a>
+                        {% elif asistencia_dia.estado == 'Falta' %}
+                            <a href="{{ url_for('editar_asistencia_calendario', id_asistencia=asistencia_dia.id_asistencia, anio=anio, mes=mes_numero) }}" class="falta" title="Comentario: {{ asistencia_dia.comentario }}">{{ asistencia_dia.estado }}</a>
+                        {% elif asistencia_dia.estado == 'No Aplica' %}
+                            <a href="{{ url_for('editar_asistencia_calendario', id_asistencia=asistencia_dia.id_asistencia, anio=anio, mes=mes_numero) }}" class="no-aplica" title="Comentario: {{ asistencia_dia.comentario }}">{{ asistencia_dia.estado }}</a>
                         {% endif %}
-                        {% if empleado.asistencias[dia].estado == 'Presente' %} P
-                        {% elif empleado.asistencias[dia].estado == 'Día libre' %} DL
-                        {% elif empleado.asistencias[dia].estado == 'Permisos Especiales/legales' %} PE
-                        {% elif empleado.asistencias[dia].estado == 'Vacaciones' %} V
-                        {% elif empleado.asistencias[dia].estado == 'Días capacitación ingreso' %} CAP
-                        {% elif empleado.asistencias[dia].estado == 'Ausencia' %} A
-                        {% elif empleado.asistencias[dia].estado == 'Licencia Médica' %} L
-                        {% elif empleado.asistencias[dia].estado == 'Renuncia/Desvinculación' %} R
-                        {% else %} {{ empleado.asistencias[dia].estado }}
-                        {% endif %}
-                    </a>
-                {% else %}
-                    <a href="#" class="estado-ninguno open-dropdown" data-rut="{{ rut }}" data-dia="{{ dia }}" data-mes="{{ mes_numero }}" data-anio="{{ anio }}">+</a>
-                    <div class="dropdown-menu">
-                        <form class="asistencia-form" data-rut="{{ rut }}" data-dia="{{ dia }}" data-mes="{{ mes_numero }}" data-anio="{{ anio }}">
-                            <label for="estado">Estado:</label>
-                            <select name="estado" required>
-                                <option value="Presente">P</option>
-                                <option value="Día libre">DL</option>
-                                <option value="Permisos Especiales/legales">PE</option>
-                                <option value="Vacaciones">V</option>
-                                <option value="Días capacitación ingreso">CAP</option>
-                                <option value="Ausencia">A</option>
-                                <option value="Licencia Médica">L</option>
-                                <option value="Renuncia/Desvinculación">R</option>
-                            </select>
-                            <br>
-                            <label for="comentario">Comentario:</label>
-                            <input type="text" name="comentario" placeholder="Motivo de la asistencia">
-                            <br>
-                            <button type="submit">Guardar</button>
-                        </form>
-                    </div>
-                {% endif %}
-            </td>
+                    {% else %}
+                        <a href="#" class="no-registro open-modal" data-rut="{{ rut }}" data-dia="{{ dia }}" data-mes="{{ mes_numero }}" data-anio="{{ anio }}">Registrar</a>
+                    {% endif %}
+                </td>
             {% endfor %}
         </tr>
         {% endfor %}
     </tbody>
 </table>
+
+<div id="asistencia_modal" class="modal">
+    <div class="modal-content">
+        <span class="close-btn">&times;</span>
+        <h2>Registrar Asistencia</h2>
+        <form id="asistencia_form">
+            <label for="modal-rut">RUT:</label>
+            <input type="text" id="modal-rut" name="RUT" readonly>
+            
+            <label for="modal-fecha">Fecha:</label>
+            <input type="date" id="modal-fecha" name="fecha" readonly>
+            
+            <label for="modal-estado">Estado:</label>
+            <select id="modal-estado" name="estado">
+                <option value="Asistio">Asistió</option>
+                <option value="Atraso">Atraso</option>
+                <option value="Falta">Falta</option>
+                <option value="No Aplica">No Aplica</option>
+            </select>
+
+            <label for="modal-comentario">Comentario:</label>
+            <textarea id="modal-comentario" name="comentario"></textarea>
+            
+            <label for="modal-hora-entrada">Hora de Entrada (opcional):</label>
+            <input type="time" id="modal-hora-entrada" name="hora_entrada">
+
+            <label for="modal-hora-salida">Hora de Salida (opcional):</label>
+            <input type="time" id="modal-hora-salida" name="hora_salida">
+            
+            <button type="submit">Guardar Registro</button>
+        </form>
+    </div>
+</div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        var modal = document.getElementById("asistencia_modal");
+        var closeBtn = document.getElementsByClassName("close-btn")[0];
+
+        // Muestra el modal al hacer clic en un enlace de 'Registrar'
+        document.getElementById('contenedor-tabla').addEventListener('click', function(e) {
+            if (e.target.classList.contains('open-modal')) {
+                e.preventDefault();
+                var rut = e.target.getAttribute('data-rut');
+                var dia = e.target.getAttribute('data-dia');
+                var mes = e.target.getAttribute('data-mes');
+                var anio = e.target.getAttribute('data-anio');
+
+                // Asegúrate de que el mes y el día tengan el formato de dos dígitos
+                var mes_formato = String(mes).padStart(2, '0');
+                var dia_formato = String(dia).padStart(2, '0');
+                var fecha_str = `${anio}-${mes_formato}-${dia_formato}`;
+
+                document.getElementById('modal-rut').value = rut;
+                document.getElementById('modal-fecha').value = fecha_str;
+                modal.style.display = "block";
+            }
+        });
+
+        // Cierra el modal
+        closeBtn.onclick = function() {
+            modal.style.display = "none";
+        };
+
+        window.onclick = function(event) {
+            if (event.target == modal) {
+                modal.style.display = "none";
+            }
+        };
+
+        // Manejar el envío del formulario de asistencia
+        var form = document.getElementById('asistencia_form');
+        form.addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            var rut = document.getElementById('modal-rut').value;
+            var fecha = document.getElementById('modal-fecha').value;
+            var estado = document.getElementById('modal-estado').value;
+            var comentario = document.getElementById('modal-comentario').value;
+            var hora_entrada = document.getElementById('modal-hora-entrada').value;
+            var hora_salida = document.getElementById('modal-hora-salida').value;
+
+            fetch('/registrar_asistencia_ajax', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    RUT: rut,
+                    fecha: fecha,
+                    estado: estado,
+                    comentario: comentario,
+                    hora_entrada: hora_entrada,
+                    hora_salida: hora_salida
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Cargar la nueva tabla actualizada después de registrar
+                    var anio = fecha.split('-')[0];
+                    var mes = fecha.split('-')[1];
+                    const url = `/calendario/${anio}/${parseInt(mes)}`;
+                    
+                    fetch(url, {
+                        headers: {
+                            "X-Requested-With": "XMLHttpRequest"
+                        }
+                    })
+                    .then(response => response.text())
+                    .then(html => {
+                        document.getElementById("contenedor-tabla").innerHTML = html;
+                        modal.style.display = "none";
+                    });
+                } else {
+                    alert('Error al registrar la asistencia.');
+                }
+            });
+        });
+    });
+</script>
