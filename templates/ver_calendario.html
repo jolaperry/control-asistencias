@@ -35,8 +35,7 @@
         document.addEventListener("DOMContentLoaded", function() {
             const enlacesMes = document.querySelectorAll(".mes-link");
             const contenedorTabla = document.getElementById("contenedor-tabla");
-            const tituloCalendario = document.getElementById("titulo_calendario");
-
+            
             enlacesMes.forEach(enlace => {
                 enlace.addEventListener("click", function(event) {
                     event.preventDefault();
@@ -51,10 +50,9 @@
                     .then(html => {
                         contenedorTabla.innerHTML = html;
                         
-                        // Extraer el mes y el año de la URL para actualizar el título
                         const partesURL = url.split('/');
                         const anio = partesURL[partesURL.length - 2];
-                        const mes = partesURL[partesURL.length - 1];
+                        const mes = partesURL[par partesURL.length - 1];
                         const nombreMes = obtenerNombreMes(mes);
                         
                         document.querySelector('.calendar-header-bar').textContent = `ASISTENCIA - ${nombreMes} ${anio}`;
@@ -69,6 +67,5 @@
             }
         });
     </script>
-
 </body>
 </html>
