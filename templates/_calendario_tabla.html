@@ -1,8 +1,8 @@
 <table class="calendar-table">
     <thead>
         <tr>
-            <th>Servicio</th>
-            <th>Apellidos y nombres</th>
+            <th class="sticky-service">Servicio</th>
+            <th class="sticky-name">Apellidos y nombres</th>
             {% for dia in dias %}
                 <th class="day-header">
                     <span>{{ dias_semana_abrev[loop.index0] }}</span>
@@ -25,7 +25,7 @@
             {% endif %}
         <tr>
             <td class="service-cell">{{ empleado.servicio }}</td>
-            <td>{{ empleado.nombre_completo }}</td>
+            <td class="name-cell">{{ empleado.nombre_completo }}</td>
             {% for dia in dias %}
                 <td class="day-cell">
                     {% set asistencia_dia = empleado.asistencias.get(dia) %}
@@ -91,7 +91,6 @@
         var modal = document.getElementById("asistencia_modal");
         var closeBtn = document.getElementsByClassName("close-btn")[0];
 
-        // Muestra el modal al hacer clic en un enlace de 'Registrar'
         document.getElementById('contenedor-tabla').addEventListener('click', function(e) {
             if (e.target.classList.contains('open-modal') || e.target.closest('.open-modal')) {
                 e.preventDefault();
@@ -111,7 +110,6 @@
             }
         });
 
-        // Cierra el modal
         closeBtn.onclick = function() {
             modal.style.display = "none";
         };
@@ -122,7 +120,6 @@
             }
         };
 
-        // Manejar el envío del formulario de asistencia
         var form = document.getElementById('asistencia_form');
         form.addEventListener('submit', function(e) {
             e.preventDefault();
