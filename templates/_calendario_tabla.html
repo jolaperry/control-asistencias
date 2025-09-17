@@ -1,8 +1,8 @@
 <table class="calendar-table">
     <thead>
         <tr>
-            <th>Nombre</th>
             <th>Servicio</th>
+            <th>Apellidos y nombres</th>
             {% for dia in dias %}
                 <th class="day-header">
                     <span>{{ dias_semana_abrev[loop.index0] }}</span>
@@ -12,16 +12,31 @@
         </tr>
     </thead>
     <tbody>
+        {% set current_servicio = "" %}
         {% for rut, empleado in calendario.items() %}
+            {% if empleado.servicio != current_servicio %}
+                {% if current_servicio != "" %}
+                    <tr class="service-separator"><td colspan="{{ 2 + dias|length }}"></td></tr>
+                {% endif %}
+                <tr class="service-group-header">
+                    <td colspan="{{ 2 + dias|length }}">{{ empleado.servicio }}</td>
+                </tr>
+                {% set current_servicio = empleado.servicio %}
+            {% endif %}
         <tr>
+            <td class="service-cell">{{ empleado.servicio }}</td>
             <td>{{ empleado.nombre_completo }}</td>
-            <td>{{ empleado.servicio }}</td>
             {% for dia in dias %}
                 <td class="day-cell">
                     {% set asistencia_dia = empleado.asistencias.get(dia) %}
                     {% if asistencia_dia %}
                         {% set estado_class = asistencia_dia.estado | lower | replace(' ', '-') %}
-                        <a href="{{ url_for('editar_asistencia_calendario', id_asistencia=asistencia_dia.id_asistencia, anio=anio, mes=mes_numero) }}" class="{{ estado_class }}" title="Comentario: {{ asistencia_dia.comentario }}">{{ asistencia_dia.estado }}</a>
+                        <a href="{{ url_for('editar_asistencia_calendario', id_asistencia=asistencia_dia.id_asistencia, anio=anio, mes=mes_numero) }}" class="{{ estado_class }}" title="Comentario: {{ asistencia_dia.comentario }}">
+                            {{ asistencia_dia.estado }}
+                            {% if asistencia_dia.comentario %}
+                                <span class="comment-icon" title="{{ asistencia_dia.comentario }}">💬</span>
+                            {% endif %}
+                        </a>
                     {% else %}
                         <a href="#" class="no-registro open-modal" data-rut="{{ rut }}" data-dia="{{ dia }}" data-mes="{{ mes_numero }}" data-anio="{{ anio }}">
                             <span class="plus-sign">+</span>
