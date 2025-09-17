@@ -8,7 +8,7 @@
 </head>
 <body>
     <div class="container">
-        <h1 id="titulo_calendario">Asistencias - {{ mes }} {{ anio }}</h1>
+        <h1 class="calendar-header-bar">ASISTENCIA - {{ mes }} {{ anio }}</h1>
 
         <nav class="calendar-nav">
             <ul>
@@ -57,13 +57,12 @@
                         const mes = partesURL[partesURL.length - 1];
                         const nombreMes = obtenerNombreMes(mes);
                         
-                        tituloCalendario.textContent = `Asistencias - ${nombreMes} ${anio}`;
+                        document.querySelector('.calendar-header-bar').textContent = `ASISTENCIA - ${nombreMes} ${anio}`;
                     })
                     .catch(error => console.error("Error:", error));
                 });
             });
             
-            // Función para obtener el nombre del mes
             function obtenerNombreMes(numeroMes) {
                 const nombresMeses = ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"];
                 return nombresMeses[parseInt(numeroMes) - 1];
