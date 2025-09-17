@@ -17,6 +17,7 @@ body {
     overflow: hidden;
 }
 
+/* Encabezado del calendario (barra azul superior) */
 .calendar-header-bar {
     background-color: #6daee3;
     color: #fff;
@@ -27,6 +28,7 @@ body {
     margin-bottom: 0;
 }
 
+/* Barra de navegación de meses */
 .calendar-nav {
     text-align: center;
     background-color: #6daee3;
@@ -60,12 +62,14 @@ body {
     color: #fff;
 }
 
+/* Contenedor de la tabla para scroll */
 #contenedor-tabla {
     overflow-x: auto;
     padding: 20px;
     background-color: #fff;
 }
 
+/* Tabla del calendario */
 .calendar-table {
     width: 100%;
     border-collapse: collapse;
@@ -131,7 +135,7 @@ body {
     display: flex;
     justify-content: center;
     align-items: center;
-    gap: 4px; /* Espacio entre la sigla y el ícono de comentario */
+    gap: 4px;
     height: 100%;
     width: 100%;
     text-decoration: none;
@@ -187,6 +191,7 @@ body {
     border: none;
     padding: 0;
 }
+
 
 /* Botones al pie de página */
 .footer-buttons {
