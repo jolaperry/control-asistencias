@@ -7,18 +7,51 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 </head>
 <body>
-    <header>
+    <div class="header">
         <h1>Panel de Administración</h1>
-        <nav>
-            <a href="{{ url_for('logout') }}" class="back-button">Cerrar Sesión</a>
+        <nav class="top-nav">
+            <a href="{{ url_for('logout') }}" class="btn-header">Cerrar Sesión</a>
+            <a href="{{ url_for('exportar_excel') }}" class="btn-header">Exportar a Excel</a>
+            <a href="{{ url_for('ver_calendario') }}" class="btn-header">Ver Calendario</a>
         </nav>
-    </header>
+    </div>
 
-    <main class="admin-main">
-        <div class="admin-buttons-container">
-            <a href="{{ url_for('ver_calendario') }}" class="admin-button">VER CALENDARIO</a>
-            <a href="{{ url_for('exportar_excel') }}" class="admin-button">EXPORTAR A EXCEL</a>
+    <div class="container">
+        <h2>Asistencias</h2>
+        
+        <div class="action-buttons">
+            <a href="{{ url_for('agregar_empleado') }}" class="btn">Agregar Empleado</a>
         </div>
-    </main>
+        
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>RUT</th>
+                    <th>Nombre</th>
+                    <th>Fecha</th>
+                    <th>Hora de Entrada</th>
+                    <th>Hora de Salida</th>
+                    <th>Estado</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for registro in registros %}
+                <tr>
+                    <td>{{ registro.RUT }}</td>
+                    <td>{{ registro.nombre_completo }}</td>
+                    <td>{{ registro.fecha }}</td>
+                    <td>{{ registro.hora_entrada if registro.hora_entrada else 'None' }}</td>
+                    <td>{{ registro.hora_salida if registro.hora_salida else 'None' }}</td>
+                    <td>{{ registro.estado }}</td>
+                    <td class="actions">
+                        <a href="{{ url_for('editar_asistencia', id_asistencia=registro.id_asistencia) }}" class="edit-link">Editar</a>
+                        <a href="{{ url_for('eliminar_registro', id_asistencia=registro.id_asistencia) }}" class="delete-link">Eliminar</a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
 </body>
 </html>
