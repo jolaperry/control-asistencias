@@ -8,18 +8,17 @@ body {
 }
 
 .container {
-    max-width: 1400px; /* Ancho máximo aumentado para el calendario */
+    max-width: 1400px;
     margin: 20px auto;
     background-color: #fff;
-    padding: 0; /* Eliminar padding para que el encabezado ocupe todo el ancho */
+    padding: 0;
     border-radius: 8px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    overflow: hidden; /* Asegura que no haya desbordamiento */
+    overflow: hidden;
 }
 
-/* Encabezado del calendario (barra azul superior) */
 .calendar-header-bar {
-    background-color: #6daee3; /* Azul claro de la imagen */
+    background-color: #6daee3;
     color: #fff;
     padding: 15px 0;
     text-align: center;
@@ -28,13 +27,12 @@ body {
     margin-bottom: 0;
 }
 
-/* Barra de navegación de meses */
 .calendar-nav {
     text-align: center;
-    background-color: #6daee3; /* Azul claro de la imagen */
+    background-color: #6daee3;
     padding: 10px 0;
-    margin-bottom: 0; /* Eliminar margen inferior */
-    border-bottom: none; /* Eliminar borde inferior */
+    margin-bottom: 0;
+    border-bottom: none;
 }
 
 .calendar-nav ul {
@@ -48,8 +46,8 @@ body {
 
 .calendar-nav a {
     text-decoration: none;
-    color: #fff; /* Texto blanco para los meses */
-    font-weight: normal; /* Normalizar peso de la fuente */
+    color: #fff;
+    font-weight: normal;
     padding: 5px 10px;
     border-radius: 5px;
     transition: background-color 0.3s;
@@ -58,77 +56,73 @@ body {
 
 .calendar-nav a:hover,
 .calendar-nav a.active {
-    background-color: rgba(255, 255, 255, 0.3); /* Un ligero fondo blanco al pasar el mouse o activo */
+    background-color: rgba(255, 255, 255, 0.3);
     color: #fff;
 }
 
-/* Contenedor de la tabla para scroll */
 #contenedor-tabla {
-    overflow-x: auto; /* Permite el scroll horizontal */
-    padding: 20px; /* Añadir padding alrededor de la tabla */
-    background-color: #fff; /* Fondo blanco para la tabla */
+    overflow-x: auto;
+    padding: 20px;
+    background-color: #fff;
 }
 
-/* Tabla del calendario */
 .calendar-table {
     width: 100%;
     border-collapse: collapse;
-    margin-top: 0; /* Eliminar margen superior */
-    table-layout: fixed; /* Ancho fijo para las columnas */
-    min-width: 1200px; /* Ancho mínimo para la tabla si hay muchas columnas */
+    margin-top: 0;
+    table-layout: fixed;
+    min-width: 1200px;
 }
 
 .calendar-table th,
 .calendar-table td {
-    border: 1px solid #c2c2c2; /* Bordes más suaves */
+    border: 1px solid #c2c2c2;
     text-align: center;
-    padding: 8px 4px; /* Ajustar padding */
-    font-size: 0.85em; /* Tamaño de fuente ligeramente menor */
-    vertical-align: middle; /* Centrar verticalmente */
-    white-space: nowrap; /* Evitar que el texto se rompa */
+    padding: 8px 4px;
+    font-size: 0.85em;
+    vertical-align: middle;
+    white-space: nowrap;
 }
 
 .calendar-table thead th {
-    background-color: #e0e0e0; /* Color de fondo para encabezados */
-    color: #333; /* Texto oscuro */
+    background-color: #e0e0e0;
+    color: #333;
     font-weight: bold;
     font-size: 0.9em;
-    position: sticky; /* Encabezados fijos al hacer scroll */
+    position: sticky;
     top: 0;
     z-index: 10;
 }
 
-/* Encabezados de día */
 .day-header {
-    width: 35px; /* Ancho fijo para las columnas de día */
+    width: 35px;
 }
-.day-header span:first-child { /* Día de la semana */
+.day-header span:first-child {
     font-size: 0.75em;
     color: #666;
 }
-.day-header span:last-child { /* Número del día */
+.day-header span:last-child {
     font-size: 0.9em;
     font-weight: bold;
 }
 
-/* Columna de Servicio y Apellidos y nombres */
-.calendar-table th:first-child, /* Servicio header */
-.calendar-table td:first-child { /* Servicio cell */
-    width: 100px; /* Ancho fijo para la columna de Servicio */
+.calendar-table th:first-child,
+.calendar-table td:first-child {
+    width: 100px;
     text-align: left;
     background-color: #f8f8f8;
-    position: sticky; /* Fijo al hacer scroll horizontal */
+    position: sticky;
     left: 0;
     z-index: 11;
 }
 
-.calendar-table th:nth-child(2), /* Apellidos y nombres header */
-.calendar-table td:nth-child(2) { /* Apellidos y nombres cell */
-    width: 200px; /* Ancho fijo para el nombre */
+.calendar-table th:nth-child(2),
+.calendar-table td:nth-child(2) {
+    width: 200px;
     text-align: left;
     background-color: #f8f8f8;
-    position: sticky; /* Fijo al hacer scroll horizontal */
-    left: 100px; /* Ajustar left según el ancho de la columna de servicio */
+    position: sticky;
+    left: 100px;
     z-index: 11;
 }
 
@@ -137,12 +131,13 @@ body {
     display: flex;
     justify-content: center;
     align-items: center;
-    height: 100%; /* Asegura que el enlace ocupe toda la celda */
+    gap: 4px; /* Espacio entre la sigla y el ícono de comentario */
+    height: 100%;
     width: 100%;
     text-decoration: none;
     color: #333;
     font-weight: bold;
-    padding: 0; /* Eliminar padding para controlarlo desde la celda */
+    padding: 0;
     border-radius: 0;
 }
 
@@ -150,15 +145,22 @@ body {
     background-color: #e6e6e6;
 }
 
+/* Icono de comentario */
+.comment-icon {
+    font-size: 0.9em;
+    color: #6a6a6a;
+    cursor: pointer;
+}
+
 /* Colores de los estados de asistencia */
-.p { color: #004d99; } /* Presente */
-.dl { color: #888; } /* Día Libre */
-.pe { color: #6a0572; } /* Permisos Especiales */
-.v { color: #28a745; } /* Vacaciones */
-.cap { color: #ffc107; } /* Capacitación */
-.a { color: #dc3545; } /* Ausencia */
-.l { color: #17a2b8; } /* Licencia Médica */
-.r { color: #6c757d; } /* Renuncia/Desvinculación */
+.p { color: #004d99; }
+.dl { color: #888; }
+.pe { color: #6a0572; }
+.v { color: #28a745; }
+.cap { color: #ffc107; }
+.a { color: #dc3545; }
+.l { color: #17a2b8; }
+.r { color: #6c757d; }
 
 /* Estilo del signo más para registrar */
 .plus-sign {
@@ -168,30 +170,29 @@ body {
 
 /* Separadores de servicio */
 .service-group-header {
-    background-color: #dbe8f5; /* Un azul más claro para el encabezado del grupo de servicio */
+    background-color: #dbe8f5;
     font-weight: bold;
     text-align: left;
     padding-left: 10px;
 }
 .service-group-header td {
-    border-top: 2px solid #004d99; /* Borde más grueso para separar grupos */
+    border-top: 2px solid #004d99;
     border-bottom: 1px solid #c2c2c2;
     padding: 10px;
 }
 
 .service-separator td {
-    height: 5px; /* Altura de la línea divisoria */
-    background-color: #004d99; /* Color de la línea divisoria */
+    height: 5px;
+    background-color: #004d99;
     border: none;
     padding: 0;
 }
-
 
 /* Botones al pie de página */
 .footer-buttons {
     text-align: center;
     margin-top: 20px;
-    padding: 0 20px 20px 20px; /* Ajustar padding */
+    padding: 0 20px 20px 20px;
 }
 
 .btn {
@@ -211,7 +212,7 @@ body {
 .modal {
     display: none;
     position: fixed;
-    z-index: 1000; /* Asegura que el modal esté por encima de todo */
+    z-index: 1000;
     left: 0;
     top: 0;
     width: 100%;
@@ -222,7 +223,7 @@ body {
 
 .modal-content {
     background-color: #fff;
-    margin: 10% auto; /* Centrar un poco más alto */
+    margin: 10% auto;
     padding: 20px;
     border: 1px solid #888;
     width: 80%;
@@ -260,8 +261,8 @@ body {
     padding: 8px;
     border-radius: 4px;
     border: 1px solid #ccc;
-    width: 100%; /* Asegura que los campos ocupen todo el ancho */
-    box-sizing: border-box; /* Incluye padding y border en el ancho total */
+    width: 100%;
+    box-sizing: border-box;
 }
 #asistencia_form button {
     background-color: #004d99;
