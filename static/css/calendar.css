@@ -19,7 +19,7 @@ body {
 
 /* Encabezado del calendario (barra azul superior) */
 .calendar-header-bar {
-    background-color: #6daee3;
+    background-color: #0d4d98;
     color: #fff;
     padding: 15px 0;
     text-align: center;
@@ -30,7 +30,6 @@ body {
 
 /* Barra de navegación de meses */
 .calendar-nav {
-    text-align: center;
     background-color: #6daee3;
     padding: 10px 0;
     margin-bottom: 0;
@@ -66,7 +65,7 @@ body {
 #contenedor-tabla {
     overflow-x: auto;
     padding: 20px;
-    background-color: #fff;
+    background-color: #f4f4f4;
 }
 
 /* Tabla del calendario */
@@ -89,8 +88,8 @@ body {
 }
 
 .calendar-table thead th {
-    background-color: #e0e0e0;
-    color: #333;
+    background-color: #17212e;
+    color: #fff;
     font-weight: bold;
     font-size: 0.9em;
     position: sticky;
@@ -100,35 +99,51 @@ body {
 
 .day-header {
     width: 35px;
+    background-color: #17212e;
 }
 .day-header span:first-child {
     font-size: 0.75em;
-    color: #666;
+    color: #b0b0b0;
 }
 .day-header span:last-child {
     font-size: 0.9em;
     font-weight: bold;
 }
 
-.calendar-table th:first-child,
-.calendar-table td:first-child {
-    width: 100px;
-    text-align: left;
-    background-color: #f8f8f8;
+/* Columnas fijas */
+.sticky-service,
+.sticky-name {
+    background-color: #fff;
     position: sticky;
     left: 0;
     z-index: 11;
+    border-right: 2px solid #000;
 }
 
-.calendar-table th:nth-child(2),
-.calendar-table td:nth-child(2) {
+.sticky-service {
+    width: 100px;
+    left: 0;
+}
+
+.sticky-name {
     width: 200px;
-    text-align: left;
-    background-color: #f8f8f8;
+    left: 100px;
+}
+
+.calendar-table tbody td:first-child {
+    background-color: #fff;
+    position: sticky;
+    left: 0;
+    z-index: 9;
+}
+
+.calendar-table tbody td:nth-child(2) {
+    background-color: #fff;
     position: sticky;
     left: 100px;
-    z-index: 11;
+    z-index: 9;
 }
+
 
 /* Estilos de las celdas de asistencia */
 .day-cell a {
@@ -191,7 +206,6 @@ body {
     border: none;
     padding: 0;
 }
-
 
 /* Botones al pie de página */
 .footer-buttons {
