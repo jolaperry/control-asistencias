@@ -88,29 +88,38 @@
 
 <script>
     document.addEventListener("DOMContentLoaded", function() {
-        var modal = document.getElementById("asistencia_modal");
-        var closeBtn = document.getElementsByClassName("close-btn")[0];
+        const modal = document.getElementById("asistencia_modal");
+        const closeBtn = document.getElementsByClassName("close-btn")[0];
+        const form = document.getElementById('asistencia_form');
 
-        // Muestra el modal al hacer clic en un enlace de 'Registrar'
-        document.getElementById('contenedor-tabla').addEventListener('click', function(e) {
-            if (e.target.classList.contains('open-modal') || e.target.closest('.open-modal')) {
-                e.preventDefault();
-                const linkElement = e.target.closest('.open-modal');
-                var rut = linkElement.getAttribute('data-rut');
-                var dia = linkElement.getAttribute('data-dia');
-                var mes = linkElement.getAttribute('data-mes');
-                var anio = linkElement.getAttribute('data-anio');
+        function setupModalListeners() {
+            // Eliminar listeners antiguos para evitar duplicados
+            const oldLinks = document.querySelectorAll('.open-modal');
+            oldLinks.forEach(link => {
+                const newLink = link.cloneNode(true);
+                link.parentNode.replaceChild(newLink, link);
+            });
 
-                var mes_formato = String(mes).padStart(2, '0');
-                var dia_formato = String(dia).padStart(2, '0');
-                var fecha_str = `${anio}-${mes_formato}-${dia_formato}`;
+            // Muestra el modal al hacer clic en un enlace de '+'
+            document.querySelectorAll('.open-modal').forEach(link => {
+                link.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    var rut = this.getAttribute('data-rut');
+                    var dia = this.getAttribute('data-dia');
+                    var mes = this.getAttribute('data-mes');
+                    var anio = this.getAttribute('data-anio');
 
-                document.getElementById('modal-rut').value = rut;
-                document.getElementById('modal-fecha').value = fecha_str;
-                modal.style.display = "block";
-            }
-        });
+                    var mes_formato = String(mes).padStart(2, '0');
+                    var dia_formato = String(dia).padStart(2, '0');
+                    var fecha_str = `${anio}-${mes_formato}-${dia_formato}`;
 
+                    document.getElementById('modal-rut').value = rut;
+                    document.getElementById('modal-fecha').value = fecha_str;
+                    modal.style.display = "block";
+                });
+            });
+        }
+        
         // Cierra el modal
         closeBtn.onclick = function() {
             modal.style.display = "none";
@@ -123,7 +132,6 @@
         };
 
         // Manejar el envío del formulario de asistencia
-        var form = document.getElementById('asistencia_form');
         form.addEventListener('submit', function(e) {
             e.preventDefault();
 
@@ -164,11 +172,15 @@
                     .then(html => {
                         document.getElementById("contenedor-tabla").innerHTML = html;
                         modal.style.display = "none";
+                        setupModalListeners(); // Vuelve a adjuntar los listeners
                     });
                 } else {
                     alert('Error al registrar la asistencia.');
                 }
             });
         });
+
+        // Configurar los listeners al cargar la página inicialmente
+        setupModalListeners();
     });
 </script>
