@@ -101,7 +101,6 @@
                 var mes = linkElement.getAttribute('data-mes');
                 var anio = linkElement.getAttribute('data-anio');
 
-                // Asegúrate de que el mes y el día tengan el formato de dos dígitos
                 var mes_formato = String(mes).padStart(2, '0');
                 var dia_formato = String(dia).padStart(2, '0');
                 var fecha_str = `${anio}-${mes_formato}-${dia_formato}`;
@@ -152,7 +151,6 @@
             .then(response => response.json())
             .then(data => {
                 if (data.success) {
-                    // Cargar la nueva tabla actualizada después de registrar
                     var anio = fecha.split('-')[0];
                     var mes = fecha.split('-')[1];
                     const url = `/calendario/${anio}/${parseInt(mes)}`;
