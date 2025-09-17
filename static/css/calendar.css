@@ -1,4 +1,4 @@
-/* Estilos generales del cuerpo */
+/* Estilos generales */
 body {
     font-family: Arial, sans-serif;
     background-color: #f4f4f4;
@@ -7,28 +7,34 @@ body {
     padding: 0;
 }
 
-/* Contenedor principal */
 .container {
-    max-width: 1200px;
+    max-width: 1400px; /* Ancho máximo aumentado para el calendario */
     margin: 20px auto;
     background-color: #fff;
-    padding: 20px;
+    padding: 0; /* Eliminar padding para que el encabezado ocupe todo el ancho */
     border-radius: 8px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    overflow: hidden; /* Asegura que no haya desbordamiento */
 }
 
-/* Encabezado */
-h1 {
+/* Encabezado del calendario (barra azul superior) */
+.calendar-header-bar {
+    background-color: #6daee3; /* Azul claro de la imagen */
+    color: #fff;
+    padding: 15px 0;
     text-align: center;
-    color: #004d99;
+    font-size: 1.8em;
+    font-weight: bold;
+    margin-bottom: 0;
 }
 
 /* Barra de navegación de meses */
 .calendar-nav {
     text-align: center;
-    margin-bottom: 20px;
-    border-bottom: 2px solid #ddd;
-    padding-bottom: 10px;
+    background-color: #6daee3; /* Azul claro de la imagen */
+    padding: 10px 0;
+    margin-bottom: 0; /* Eliminar margen inferior */
+    border-bottom: none; /* Eliminar borde inferior */
 }
 
 .calendar-nav ul {
@@ -42,78 +48,150 @@ h1 {
 
 .calendar-nav a {
     text-decoration: none;
-    color: #004d99;
-    font-weight: bold;
+    color: #fff; /* Texto blanco para los meses */
+    font-weight: normal; /* Normalizar peso de la fuente */
     padding: 5px 10px;
     border-radius: 5px;
     transition: background-color 0.3s;
+    font-size: 0.9em;
 }
 
 .calendar-nav a:hover,
 .calendar-nav a.active {
-    background-color: #004d99;
+    background-color: rgba(255, 255, 255, 0.3); /* Un ligero fondo blanco al pasar el mouse o activo */
     color: #fff;
+}
+
+/* Contenedor de la tabla para scroll */
+#contenedor-tabla {
+    overflow-x: auto; /* Permite el scroll horizontal */
+    padding: 20px; /* Añadir padding alrededor de la tabla */
+    background-color: #fff; /* Fondo blanco para la tabla */
 }
 
 /* Tabla del calendario */
 .calendar-table {
     width: 100%;
     border-collapse: collapse;
-    margin-top: 20px;
-    table-layout: fixed;
+    margin-top: 0; /* Eliminar margen superior */
+    table-layout: fixed; /* Ancho fijo para las columnas */
+    min-width: 1200px; /* Ancho mínimo para la tabla si hay muchas columnas */
 }
 
 .calendar-table th,
 .calendar-table td {
-    border: 1px solid #ddd;
+    border: 1px solid #c2c2c2; /* Bordes más suaves */
     text-align: center;
-    padding: 10px 5px;
-    font-size: 0.9em;
-    vertical-align: top;
+    padding: 8px 4px; /* Ajustar padding */
+    font-size: 0.85em; /* Tamaño de fuente ligeramente menor */
+    vertical-align: middle; /* Centrar verticalmente */
+    white-space: nowrap; /* Evitar que el texto se rompa */
 }
 
 .calendar-table thead th {
-    background-color: #004d99;
-    color: #fff;
-    font-weight: normal;
-    font-size: 1em;
+    background-color: #e0e0e0; /* Color de fondo para encabezados */
+    color: #333; /* Texto oscuro */
+    font-weight: bold;
+    font-size: 0.9em;
+    position: sticky; /* Encabezados fijos al hacer scroll */
+    top: 0;
+    z-index: 10;
 }
 
-.day-header span {
-    display: block;
+/* Encabezados de día */
+.day-header {
+    width: 35px; /* Ancho fijo para las columnas de día */
+}
+.day-header span:first-child { /* Día de la semana */
+    font-size: 0.75em;
+    color: #666;
+}
+.day-header span:last-child { /* Número del día */
+    font-size: 0.9em;
+    font-weight: bold;
 }
 
-/* Estilos de los estados de asistencia */
-.p { color: #004d99; font-weight: bold; }
-.dl { color: #004d99; font-weight: bold; }
-.pe { color: #004d99; font-weight: bold; }
-.v { color: #004d99; font-weight: bold; }
-.cap { color: #004d99; font-weight: bold; }
-.a { color: red; font-weight: bold; }
-.l { color: green; font-weight: bold; }
-.r { color: red; font-weight: bold; }
+/* Columna de Servicio y Apellidos y nombres */
+.calendar-table th:first-child, /* Servicio header */
+.calendar-table td:first-child { /* Servicio cell */
+    width: 100px; /* Ancho fijo para la columna de Servicio */
+    text-align: left;
+    background-color: #f8f8f8;
+    position: sticky; /* Fijo al hacer scroll horizontal */
+    left: 0;
+    z-index: 11;
+}
 
+.calendar-table th:nth-child(2), /* Apellidos y nombres header */
+.calendar-table td:nth-child(2) { /* Apellidos y nombres cell */
+    width: 200px; /* Ancho fijo para el nombre */
+    text-align: left;
+    background-color: #f8f8f8;
+    position: sticky; /* Fijo al hacer scroll horizontal */
+    left: 100px; /* Ajustar left según el ancho de la columna de servicio */
+    z-index: 11;
+}
+
+/* Estilos de las celdas de asistencia */
 .day-cell a {
-    display: block;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100%; /* Asegura que el enlace ocupe toda la celda */
+    width: 100%;
     text-decoration: none;
-    padding: 5px;
-    border-radius: 4px;
-    transition: background-color 0.3s;
+    color: #333;
+    font-weight: bold;
+    padding: 0; /* Eliminar padding para controlarlo desde la celda */
+    border-radius: 0;
 }
 
 .day-cell a:hover {
-    background-color: #f0f0f0;
+    background-color: #e6e6e6;
 }
 
+/* Colores de los estados de asistencia */
+.p { color: #004d99; } /* Presente */
+.dl { color: #888; } /* Día Libre */
+.pe { color: #6a0572; } /* Permisos Especiales */
+.v { color: #28a745; } /* Vacaciones */
+.cap { color: #ffc107; } /* Capacitación */
+.a { color: #dc3545; } /* Ausencia */
+.l { color: #17a2b8; } /* Licencia Médica */
+.r { color: #6c757d; } /* Renuncia/Desvinculación */
+
+/* Estilo del signo más para registrar */
 .plus-sign {
-    font-size: 1.5em; /* Aumenta el tamaño del + */
-    color: #004d99; /* Color del + */
+    font-size: 1.2em;
+    color: #004d99;
 }
+
+/* Separadores de servicio */
+.service-group-header {
+    background-color: #dbe8f5; /* Un azul más claro para el encabezado del grupo de servicio */
+    font-weight: bold;
+    text-align: left;
+    padding-left: 10px;
+}
+.service-group-header td {
+    border-top: 2px solid #004d99; /* Borde más grueso para separar grupos */
+    border-bottom: 1px solid #c2c2c2;
+    padding: 10px;
+}
+
+.service-separator td {
+    height: 5px; /* Altura de la línea divisoria */
+    background-color: #004d99; /* Color de la línea divisoria */
+    border: none;
+    padding: 0;
+}
+
 
 /* Botones al pie de página */
 .footer-buttons {
     text-align: center;
     margin-top: 20px;
+    padding: 0 20px 20px 20px; /* Ajustar padding */
 }
 
 .btn {
@@ -133,7 +211,7 @@ h1 {
 .modal {
     display: none;
     position: fixed;
-    z-index: 1;
+    z-index: 1000; /* Asegura que el modal esté por encima de todo */
     left: 0;
     top: 0;
     width: 100%;
@@ -144,7 +222,7 @@ h1 {
 
 .modal-content {
     background-color: #fff;
-    margin: 15% auto;
+    margin: 10% auto; /* Centrar un poco más alto */
     padding: 20px;
     border: 1px solid #888;
     width: 80%;
@@ -174,8 +252,23 @@ h1 {
     flex-direction: column;
     gap: 10px;
 }
+#asistencia_form label {
+    font-weight: bold;
+    margin-top: 5px;
+}
 #asistencia_form input, #asistencia_form select, #asistencia_form textarea, #asistencia_form button {
     padding: 8px;
     border-radius: 4px;
     border: 1px solid #ccc;
+    width: 100%; /* Asegura que los campos ocupen todo el ancho */
+    box-sizing: border-box; /* Incluye padding y border en el ancho total */
+}
+#asistencia_form button {
+    background-color: #004d99;
+    color: #fff;
+    cursor: pointer;
+    margin-top: 10px;
+}
+#asistencia_form button:hover {
+    background-color: #003366;
 }
